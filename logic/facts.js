@@ -15,6 +15,7 @@ LOGIC.facts({
   maxChars: 80,   // a negative longer than this waits for a person
   maxWords: 10,   // a negative with more words than this waits for a person
   boughtDays: 90, // a search that made a sale in this many days waits for a person
+  unclearDays: 30, // UNCLEAR_DAYS: an unclear verdict with no hold (one from before Nov 7) is judged again once older than this (todo.rs open)
 
   // The tracking module (comm-chat and the verifiers' trees, read 2026-11-07; rebuilt the same day).
   freshDays: 7,   // an answer counts for the modules after it this many New York days (modules/mod.rs FRESH_DAYS)

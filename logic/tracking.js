@@ -50,7 +50,7 @@ LOGIC.flow({
         { title: 'C2’s Meta', steps: [['Two tags send each lead twice', 'since May 20', 'block'], ['Tracking says Meta’s count cannot be trusted', 'Nov 1', 'opus']], end: [['Results judges Meta on clicks, landing page views and GA4’s leads instead', '', 'keep']] },
         { title: 'C2’s Google', steps: [['Each Google lead matches a lead in the lead app', 'from Oct 1', 'code'], ['Tracking says Google’s count is true from Oct 1', 'Nov 1', 'opus']], end: [['Results does not judge on September’s 4.5 conversions', '', 'keep']] }] },
       vcap: 'These are C2’s module tests of Nov 1. Each campaign answer names Tracking’s answer as its source, so a count that nobody had checked would have misled every one of them.' },
-    { about: ['tracking'], kicker: 'Status · Nov 7',
+    { about: ['tracking'], kicker: 'Status · Nov 8',
       head: 'Today the match runs for two clients on Google, and most of this design is not built yet',
       visual: { type: 'timeline', items: [
         ['Oct 30', 'Will asks for the lead match, so each morning Barbara reads C2’s and Bull Legal’s lead apps and sets each week’s real leads beside Google’s count.'],
@@ -58,7 +58,8 @@ LOGIC.flow({
         ['Nov 4', 'The module run joins the daily run, first as a dry run on a copy.'],
         ['Nov 7', 'The module run is merged, but it stays off in live until Will tests it and says yes to its cost.'],
         ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.'],
-        ['Nov 7, later', 'Will asks if the orders and leads can be matched to the conversions, and says he can make sure we have the data. So in the plan the record sends each one, and the match can be one to one.']] },
+        ['Nov 7, later', 'Will asks if the orders and leads can be matched to the conversions, and says he can make sure we have the data. So in the plan the record sends each one, and the match can be one to one.'],
+        ['Nov 8', 'Will asks what happens when a new client’s tracking is broken. So in the plan, code checks the record before the first send, and Opus works on each fix.']] },
       vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Five things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, the sending of each lead and sale from the record, and the rebuild.' },
 
     { about: ['tcall'], kicker: 'Every call',

@@ -103,5 +103,5 @@ LOGIC.flow({
     OPUS: { tag: 'real', rows: [{ steps: [['music press release', 'with its summary', 'code'], ['Opus reads it', 'templates and guides to write your own release', 'opus']], end: [['Block', 'National Sep 2026, Nov 7', 'block']] }], note: 'C2, Nov 7. Opus’s reason names the page, and C2 sells full PR campaigns, not do-it-yourself help.' }
   },
 
-  reviewed: { self: 'f1f00049', above: '6182870e', on: '2026-11-07' }
+  reviewed: { self: 'f1f00049', above: 'cce35754', on: '2026-11-08' }
 });

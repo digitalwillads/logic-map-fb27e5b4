@@ -32,7 +32,7 @@ LOGIC.flow({
     { about: ['opus'], kicker: 'What Opus gets',
       head: 'Opus judges every new search that the keyword check does not keep, and no second judge checks its call',
       visual: { type: 'gate', rows: [['A live keyword of its campaign, word for word', 'kept with no judge', 'pass'], ['Judged before', 'not judged again unless a new card sends a keep back, and an unclear waits for Will', 'pass'], ['Every other new search that cost money', 'Opus judges it, with Google’s page beside it', 'wait']], end: ['Opus’s keep or block stands, and code checks each negative', 'opus'] },
-      vcap: 'Will, Nov 7: no cheaper judge settles searches before Opus, and no other AI checks Opus after. Every negative still waits for Will’s approval on its case.' },
+      vcap: 'Will, Nov 7: no cheaper judge settles searches before Opus, and no other AI checks Opus after. Code still checks each negative before it goes out.' },
     { about: ['opus'], kicker: 'The research test · Nov 5',
       head: '6 hard searches: 5 keeps, 1 unclear, 0 blocks',
       visual: { type: 'dots', groups: [[5, 'keep', 'keep'], [1, 'code', 'unclear'], [0, 'block', 'block']] },
@@ -120,5 +120,5 @@ LOGIC.flow({
     HELD: { tag: 'real', rows: [{ steps: [['music marketing campaigns', 'Los Angeles: unclear', 'opus'], ['Held for Will’s review', 'no negative, and no new judge', 'will']], end: [['Waits for Will', 'one of 13 on Nov 7', 'will']] }], note: 'C2, Nov 7.' }
   },
 
-  reviewed: { self: '55cf8b49', above: '6182870e', on: '2026-11-07' }
+  reviewed: { self: '55cf8b49', above: 'cce35754', on: '2026-11-08' }
 });

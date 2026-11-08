@@ -43,7 +43,7 @@ LOGIC.flow({
   deck: [
     { about: ['setup'], kicker: 'What it is',
       head: 'Setup makes a client ready, and nobody has to start it by hand',
-      visual: { type: 'flow', rows: [{ steps: [['A start', 'Barbara, the daily run, or a call that finds a client not set up', 'next'], ['Setup', 'service list, cards', 'opus']], end: [['Set up', 'the judges read the newest list and cards', 'keep']] }] },
+      visual: { type: 'flow', rows: [{ steps: [['A start', 'a person, or a call that finds a client not set up', 'code'], ['Setup', 'service list, cards', 'opus']], end: [['Set up', 'the judges read the newest list and cards', 'keep']] }] },
       vcap: 'Setup is not a step of each call. It runs once for a new client, and again when a campaign changes.' },
     { about: ['setup'], kicker: 'What gets made',
       head: 'Setup makes three things for each client',
@@ -56,7 +56,7 @@ LOGIC.flow({
       head: 'Three callers start setup: a person or Barbara, a call, and later another module',
       visual: { type: 'flow', rows: [
         { title: 'A new client', steps: [['Barbara or a person asks', '“Set up search terms for this client”', 'next'], ['Setup runs', '', 'opus']], end: [['Set up', '', 'keep']] },
-        { title: 'A call finds a client not set up', steps: [['The daily run calls the module', 'Set up? No.', 'code'], ['Setup starts after the call', 'the call goes on with Opus', 'opus']], end: [['Set up for the next call', '', 'keep']] },
+        { title: 'A call finds a client not set up', steps: [['A person’s session calls the module', 'Set up? No.', 'code'], ['Setup starts after the call', 'the call goes on with Opus', 'opus']], end: [['Set up for the next call', '', 'keep']] },
         { title: 'A campaign changed', steps: [['A changed campaign', 'another module will notice it: not built', 'next'], ['It asks for a new card', '', 'next']], end: [['Opus drafts the card again', '', 'opus']] }] },
       vcap: 'Built Nov 7: setup starts after a call finds a client not set up, and a person can run it with “search-terms setup <client>”. Not built yet: a start from Barbara, and the module that notices a changed campaign (Will, Nov 7).',
       quote: ['I want it to happen automatic automatically, right? So like I want to call in from Barbara and the other places to make this happen.', 'Nov 6'] },
@@ -123,8 +123,8 @@ LOGIC.flow({
     CHK: { tag: 'real', rows: [{ steps: [['C2’s old National Sep 2026 card', '“the national twin of the LA + New York campaign”', 'code'], ['Does it name another campaign?', 'yes', 'code']], end: [['Refused, and drafted again', 'Nov 7', 'block']] }], note: 'One of C2’s 5 old cards that the check refused. Its new card names only places.' },
     CHG: { tag: 'plan', rows: [{ steps: [['C2 adds keywords to LA + New York', 'a made change', 'next'], ['Another module notices', 'not built', 'next']], end: [['A new card for LA + New York', '', 'next']] }], note: 'Not built: a separate module (Will, Nov 7).' },
     RE: { tag: 'real', rows: [{ steps: [['music press release', 'National Sep 2026, kept before', 'opus'], ['Its new card, Nov 7', 'and Google’s page', 'code']], end: [['Opus judges it again: block', 'the page is guides to write your own', 'block']] }], note: 'C2, Nov 7: one of the 20 kept searches that became blocks with the 5 new cards.' },
-    DONE: { tag: 'real', rows: [{ steps: [['C2', 'a service list and 8 cards', 'code'], ['Set up', 'Nov 5', 'keep']], end: [['Opus reads them on each call', '', 'opus']] }], note: 'C2 is the only client set up in this project.' }
+    DONE: { tag: 'real', rows: [{ steps: [['C2', 'a service list and 8 cards', 'code'], ['Set up', 'Nov 5', 'keep']], end: [['Opus reads them on each call', '', 'opus']] }], note: 'C2 and ADI are the clients set up in this project.' }
   },
 
-  reviewed: { self: '5ddbecca', above: '6182870e', on: '2026-11-07' }
+  reviewed: { self: '5ddbecca', above: 'cce35754', on: '2026-11-08' }
 });
