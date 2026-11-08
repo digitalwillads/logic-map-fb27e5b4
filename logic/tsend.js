@@ -13,7 +13,11 @@
 // read 2026-11-07) sends each ActiveCampaign lead, tour and move-in to Google with its gclid and its own id
 // (ac-<contact>-<kind>), and can read the status of each send; Skai sends the LS brands' qualified leads to Google as
 // Kenshoo_MQL (Barbara's copy of Nov 7, ad_day_conversions: Welch's Google 14, 212, 168 and 224 from March to June,
-// then none to Nov 6; Thomas and ADI go on through October). Who sends is Will's question (Nov 7).
+// then none to Nov 6; Thomas and ADI go on through October). Who sends: Will, Nov 8, picked "Our code sends every one, from
+// the record it reads each morning", and noted on its slide: "Yes we do it and in situations where we can't we mark the
+// exception and do something different for that client". So a diamond asks if our code can send for the client, and a no
+// marks the exception. Real cases: Graystone's tickets sell on venue and ticket-seller sites (C2's answer 11, Nov 1); Skai
+// sends the LS brands' qualified leads; C2's Google refuses Good uploads until the Data Manager sign-in (case #57).
 // Will, 2026-11-08, a note on this part: "What about if we onboard a new client and their tracking is broken. Does that
 // change this? We would want to have it find out here and then pass it to opus (as this is a validator) which would then
 // work on fixing it." So before the first send, code checks two things against the record (the click id kept, and nothing
@@ -31,6 +35,8 @@ LOGIC.flow({
   chart: [
     'flowchart TB',
     'START(["Before the first send,<br/>such as for a new client"]):::next',
+    'CAN{"Can our code send<br/>for this client?"}:::next',
+    'EXC(["We mark the exception for<br/>that client, with the reason<br/>and what we do instead"]):::next',
     'KEPT{"Does the record keep the<br/>click id of each lead<br/>and sale?"}:::next',
     'ONCE{"Once the send starts, will<br/>anything else count the<br/>same leads and sales?"}:::next',
     'FIX["Opus makes the fix itself,<br/>and code checks again"]:::next',
@@ -42,7 +48,8 @@ LOGIC.flow({
     'REFUSED(["Refused, with the platform’s<br/>reason, which is a clue<br/>to what broke"]):::next',
     'TAKEN(["Taken, so this conversion<br/>is one lead or sale we know"]):::next',
     'BACK["When the client marks the lead<br/>bad or refunds the order, the<br/>conversion is taken back"]:::next',
-    'START --> KEPT',
+    'START --> CAN',
+    'CAN -- yes --> KEPT', 'CAN -- no --> EXC',
     'KEPT -- no --> FIX', 'KEPT -- yes --> ONCE',
     'ONCE -- yes --> FIX', 'ONCE -- no --> NEW',
     'FIX -.-> KEPT',
@@ -52,19 +59,14 @@ LOGIC.flow({
     'REPLY -- no --> REFUSED', 'REPLY -- yes --> TAKEN',
     'TAKEN --> BACK'
   ],
-  links: { START: 'tsfirst', KEPT: 'tsnew', ONCE: 'tsonce', FIX: 'tsfix', NEW: 'tsnew', SEND: 'tswho', REPLY: 'tsreply', REFUSED: 'tsreply', BACK: 'tsback' },
+  links: { START: 'tsfirst', CAN: 'tswho', EXC: 'tsexc', KEPT: 'tsnew', ONCE: 'tsonce', FIX: 'tsfix', NEW: 'tsnew', SEND: 'tswho', REPLY: 'tsreply', REFUSED: 'tsreply', BACK: 'tsback' },
   leaves: {
     tsfirst: 'A new client',
     tsnew: 'What the record must keep',
     tsonce: 'Nothing else counts them',
     tsfix: 'Opus makes the fix',
-    tswho: { title: 'Who sends', open: {
-      q: 'Who should send each real lead and sale to the platforms: our code, or the client’s own systems?',
-      since: 'Nov 7',
-      opts: [
-        ['Our code sends every one, from the record it reads each morning', true, 'Only the one who sends sees the platform’s reply for each lead or sale, so this is the only way to match every conversion one by one. Our own worker already does this for Summerset on Google. Where a client’s own tool already sends the same conversions, that sending must stop, or each one counts twice, and that change needs the client’s yes.'],
-        ['The client’s own system sends where it already can, and our code sends the rest', false, 'This changes the least in each account, because some tools already send, such as Skai for the five LS brands and Kogalla’s Shopify to Meta. But where the client’s tool sends, code sees only the platform’s totals, so that part is matched by count, and a feed that stops, like Skai’s to Welch’s Google after June, shows only as a gap.'],
-        ['Nothing is sent, and code matches counts only', false, 'Nothing changes in any account, and the match stays by day and by campaign. No conversion is ever a lead or sale we know.']] } },
+    tswho: 'Who sends',
+    tsexc: 'An exception for one client',
     tsreply: 'The platform’s reply',
     tsback: 'Taking one back'
   },
@@ -130,7 +132,7 @@ LOGIC.flow({
       visual: { type: 'flow', rows: [
         { title: 'Both count', steps: [['The tag on the site counts a lead', '', 'code'], ['The send counts the same lead', '', 'next']], end: [['The platform counts it twice', '', 'block']] },
         { title: 'The switch, on one day', steps: [['The send starts', '', 'next'], ['The old action stops counting', '', 'next']], end: [['Each lead counts once', '', 'keep']] }] },
-      vcap: 'This holds whether the old tag works or is broken, because the send takes the place of its count. Where a client’s own tool already sends, such as Kogalla’s Shopify to Meta, one of the two must stop, and that change needs the client’s yes.' },
+      vcap: 'This holds whether the old tag works or is broken, because the send takes the place of its count. Where a client’s own tool already sends, such as Kogalla’s Shopify to Meta, that sending must stop, and that needs the client’s yes. If the client says no, we mark the exception for that client.' },
 
     { about: ['tsfix'], kicker: 'Opus makes the fix',
       head: 'Tracking is a validator, so code finds the break, Opus makes the fix itself, and code checks again',
@@ -140,13 +142,21 @@ LOGIC.flow({
       vcap: 'The first row is how a validator treats Opus’s work today. On Nov 8 Will chose the same for Tracking, so no person says yes first. A fix that fails the check goes back to Opus, with why. Only a fix that needs access we do not have still goes to a person, such as C2’s sign-in for Google’s Data Manager on case #57.',
       quote: ['We would want to have it find out here and then pass it to opus (as this is a validator) which would then work on fixing it.', 'Nov 8'] },
 
-    { about: ['tswho'], kicker: 'A question for Will',
-      head: 'Only the one who sends sees the platform’s reply for each lead, so who sends decides if the match can be one to one',
+    { about: ['tswho'], kicker: 'Who sends · Will, Nov 8',
+      head: 'Our code sends every lead and sale, because only the one who sends sees the platform’s reply for each one',
       visual: { type: 'flow', rows: [
         { title: 'Our own worker sends, at Summerset', steps: [['Each lead, tour and move-in goes to Google', 'with its gclid and its own id', 'code'], ['Google’s answer on each send comes back to our worker', '', 'code']], end: [['Code can check every one against the record', '', 'keep']] },
         { title: 'The client’s own tool sends, at Welch', steps: [['Skai sends qualified leads to Google', '', 'code'], ['The feed stopped after June', '', 'block']], end: [['We see it only as a gap in the totals', '', 'block']] }] },
-      vcap: 'Some clients’ own tools already send, such as Skai for the five LS brands and Kogalla’s Shopify to Meta. If our code sends the same conversions too, each one counts twice, so one of the two must stop.',
-      open: 'tswho' },
+      vcap: 'Will chose this on Nov 8, so our code sends from the record it reads each morning. Where a client’s own tool already sends the same conversions, such as Kogalla’s Shopify to Meta, that sending must stop, or each one counts twice.' },
+
+    { about: ['tsexc'], kicker: 'An exception for one client',
+      head: 'Where our code cannot send, we mark the exception for that client and do something else there',
+      visual: { type: 'gate', rows: [
+        ['Graystone, C2’s ticket account', 'Its tickets sell on venue and ticket-seller sites, so no sale reaches the record and nothing can be sent. Its campaigns are judged on clicks and cost instead, as Results does when it cannot trust a count.', 'hold'],
+        ['The five LS brands, if Skai must stay', 'Skai, the client’s own tool, sends their qualified leads to Google and Microsoft. If it must keep sending, our code does not send there, and code matches Skai’s sends by count.', 'hold'],
+        ['C2 on Google, until the sign-in', 'Google refuses our sends of Good leads until someone grants the Data Manager sign-in on case #57. Until then, code reads the Good leads from the lead app alone.', 'wait']] },
+      vcap: 'Each exception names its reason and what we do instead, so code never takes it for a break. The facts are real, from C2’s Tracking answer of Nov 1 and Barbara’s copy of Nov 7. What we do instead for Graystone and the LS brands is Claude’s call.',
+      quote: ['Yes we do it and in situations where we can’t we mark the exception and do something different for that client', 'Nov 8'] },
 
     { about: ['tsreply'], kicker: 'The platform’s reply',
       head: 'Each platform answers every send, so a refused one comes with its reason',
@@ -167,9 +177,13 @@ LOGIC.flow({
   ],
 
   examples: {
+    CAN: { tag: 'plan', rows: [
+      { title: 'Summerset', steps: [['Its leads are in ActiveCampaign', 'and Google takes our sends', 'code']], end: [['Yes, so our code sends', '', 'keep']] },
+      { title: 'Graystone', steps: [['Its tickets sell on other sites', 'no sale reaches the record', 'block']], end: [['No, so we mark the exception', '', 'next']] }], note: 'The facts are real, from Summerset’s worker and C2’s Tracking answer of Nov 1. No code asks this yet.' },
+    EXC: { tag: 'plan', rows: [{ steps: [['Welch’s qualified leads', 'Skai, the client’s own tool, sends them to Google', 'code'], ['Our code may not send the same leads', 'or each one counts twice', 'block']], end: [['The exception is marked, and code matches Skai’s sends by count', '', 'next']] }], note: 'Skai’s feed is real, from Barbara’s copy of Nov 7. Nothing marks an exception yet.' },
     START: { tag: 'plan', rows: [{ steps: [['Piretti’s onboarding call', 'Sep 29', 'will'], ['Josh says attribution was never set up right', '', 'will']], end: [['Code checks the account before the first send', '', 'next']] }], note: 'Piretti’s words are real, from its onboarding call of Sep 29. No code runs this check yet.' },
     KEPT: { tag: 'plan', rows: [{ steps: [['C2’s newest leads', 'in its lead app', 'code'], ['The Google ones carry a gclid, but none carries an fbclid', '', 'next']], end: [['Google’s leads can be sent, but Meta’s cannot yet', '', 'block']] }], note: 'The facts are real, because C2’s lead app keeps Google’s click with each lead but not Meta’s. No code runs this check yet.' },
-    ONCE: { tag: 'plan', rows: [{ steps: [['Kogalla’s Shopify sends each order to Meta', 'from its server', 'code'], ['Our send would send the same orders', '', 'next']], end: [['One of the two must stop first, with the client’s yes', '', 'block']] }], note: 'Shopify’s send to Meta is real, from Kogalla’s Tracking answer of Nov 1. Nothing of ours sends for Kogalla yet.' },
+    ONCE: { tag: 'plan', rows: [{ steps: [['Kogalla’s Shopify sends each order to Meta', 'from its server', 'code'], ['Our send would send the same orders', '', 'next']], end: [['Shopify’s send must stop first, with the client’s yes', '', 'block']] }], note: 'Shopify’s send to Meta is real, from Kogalla’s Tracking answer of Nov 1. Nothing of ours sends for Kogalla yet.' },
     FIX: { tag: 'plan', rows: [{ steps: [['C2’s lead app keeps no fbclid', 'so no Meta lead can be sent', 'block'], ['Opus makes the lead app keep the fbclid too', '', 'next'], ['Code checks the next Meta leads', 'each one carries its fbclid', 'next']], end: [['The send to Meta can start', '', 'keep']] }], note: 'The gap is real, because C2’s lead app keeps Google’s click with each lead but not Meta’s. No code makes this fix or runs this check yet.' },
     NEW: { tag: 'plan', rows: [{ steps: [['A lead comes into C2’s lead app', 'from a Google click', 'code'], ['The app keeps its time, its own id and its gclid', '', 'next']], end: [['Ready to send', '', 'next']] }], note: 'Made up from C2’s lead app, which keeps each lead’s Google click today but gives code no lead rows yet.' },
     CLICK: { tag: 'plan', rows: [{ steps: [['C2, the week of Oct 19', '10 leads came in', 'code'], ['Did each come from an ad click?', '4 came with a Google click', 'next']], end: [['Those 4 go to Google', '', 'next']] }], note: 'The numbers are real, from Barbara’s weekly lead counts for C2, read on Nov 7. The lead app keeps only Google’s click today, so the other 6 may hold Meta clicks that nobody kept.' },
@@ -181,5 +195,5 @@ LOGIC.flow({
     BACK: { tag: 'real', rows: [{ steps: [['C2, October', '5 leads with a Google click marked bad', 'will'], ['The lead app tells Google', '', 'code']], end: [['Google takes all 5 back', '', 'keep']] }], note: 'C2’s Tracking answer of Nov 1. This piece runs today, for C2 on Google alone.' }
   },
 
-  reviewed: { self: '745a889f', above: '7f08998d', on: '2026-11-08' }
+  reviewed: { self: 'd2ab008c', above: '7f08998d', on: '2026-11-08' }
 });

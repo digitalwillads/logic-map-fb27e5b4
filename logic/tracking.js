@@ -64,7 +64,8 @@ LOGIC.flow({
         ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.'],
         ['Nov 7, later', 'Will asks if the orders and leads can be matched to the conversions, and says he can make sure we have the data. So in the plan the record sends each one, and the match can be one to one.'],
         ['Nov 8', 'Will asks what happens when a new client’s tracking is broken. So in the plan, code checks the record before the first send, and Opus works on each fix.'],
-        ['Nov 8, later', 'Will says that Opus makes each tracking fix itself, with no person’s yes, and code checks it.']] },
+        ['Nov 8, later', 'Will says that Opus makes each tracking fix itself, with no person’s yes. Code checks it the morning after, and Opus undoes a fix that breaks the count.'],
+        ['Nov 8, afternoon', 'Will picks that our code sends every lead and sale, with a marked exception where it cannot. While a platform is rebuilt, a run may raise spend there only where the bids do not follow its count.']] },
       vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Six things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, the sending of each lead and sale from the record, the rebuild, and Opus making each fix itself.' },
 
     { about: ['tcall'], kicker: 'Every call',

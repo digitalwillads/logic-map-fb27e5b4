@@ -15,6 +15,9 @@
 // Will, 2026-11-08, asked "Should Opus's tracking fix wait for a person's yes?": "No, Opus makes the fix itself, and code
 // checks it." So the flow ends with Opus's own fix, and the rule "Opus's answer, checked against the record" checks it
 // (its last row: the next settled week must match again). Today the fix waits on Will on case #58 (answer 11).
+// Asked "Should code also check each fix on the first day after it goes out?" (1: yes, and Opus undoes the fix if that
+// day's count is far from the record; 2: no), Will answered "1" on Nov 8. A week settles {settleDays} = 7 days after it
+// ends, so the weekly check alone leaves a bad fix live for one to two weeks.
 LOGIC.flow({
   id: 'twhy', parent: 'tracking', status: 'Partly built; the rest is not built yet',
   title: 'Why it broke', short: 'Why it broke',
@@ -29,15 +32,21 @@ LOGIC.flow({
     'OPUS["Opus names the cause, the<br/>day it began and the fix"]:::opus',
     'PROOF{"Code checks: does<br/>the cause explain the<br/>gap in the record?"}:::next',
     'AGAIN(["Refused, with why:<br/>Opus answers again"]):::next',
-    'FIX(["Opus makes the fix itself,<br/>and code checks that the<br/>counts match again"]):::next',
+    'FIX["Opus makes the fix itself"]:::next',
+    'DAY1{"Is the count near<br/>the record on the<br/>morning after?"}:::next',
+    'UNDO(["Opus undoes the fix,<br/>and tries again"]):::next',
+    'WEEK(["The next settled week<br/>must match again"]):::next',
     'IN --> SIGNS --> CHECKS --> NEW',
     'NEW -- yes --> STANDS', 'NEW -- no --> OPUS',
     'OPUS --> PROOF',
     'PROOF -- no --> AGAIN', 'AGAIN -.-> OPUS',
-    'PROOF -- yes --> FIX'
+    'PROOF -- yes --> FIX',
+    'FIX --> DAY1',
+    'DAY1 -- no --> UNDO', 'UNDO -.-> OPUS',
+    'DAY1 -- yes --> WEEK'
   ],
-  links: { SIGNS: 'twsigns', CHECKS: 'twchecks', NEW: 'twnew', STANDS: 'twnew', OPUS: 'twopus', PROOF: 'twproof', AGAIN: 'twproof', FIX: 'twproof' },
-  leaves: { twsigns: 'Five warning signs', twchecks: 'The platform checks', twnew: 'Only a new break', twopus: 'Opus names the cause', twproof: 'Opus’s answer, checked against the record' },
+  links: { SIGNS: 'twsigns', CHECKS: 'twchecks', NEW: 'twnew', STANDS: 'twnew', OPUS: 'twopus', PROOF: 'twproof', AGAIN: 'twproof', FIX: 'twfix', DAY1: 'twfix', UNDO: 'twfix', WEEK: 'twfix' },
+  leaves: { twsigns: 'Five warning signs', twchecks: 'The platform checks', twnew: 'Only a new break', twopus: 'Opus names the cause', twproof: 'Opus’s answer, checked against the record', twfix: 'The fix, checked' },
 
   deck: [
     { about: ['twhy'], kicker: 'The idea',
@@ -108,7 +117,14 @@ LOGIC.flow({
         ['The size of the gap', 'The cause must explain how far apart the counts are: two tags on each form predict up to twice the real leads, as C2’s 7 against 4.', 'pass'],
         ['What would prove it wrong', 'Each answer names one, and code runs it on the record. Bull’s answer of Nov 1 named a lead-by-lead read that shows two people sent the forms of Oct 4 and Oct 5.', 'pass'],
         ['The fix', 'After the fix goes out, the next settled week must match again.', 'pass']], end: ['An answer that fails is refused, and Opus tries again', 'code'] },
-      vcap: 'This is not built yet, and it settles the old question “Who checks Opus’s yes or no?”: the record checks it, because Will wants the record to be the proof. That is Claude’s call, from his words of Nov 7. Since Nov 8 Opus also makes each fix itself, with no person’s yes, so the last row is the check on every fix.' }
+      vcap: 'This is not built yet, and it settles the old question “Who checks Opus’s yes or no?”: the record checks it, because Will wants the record to be the proof. That is Claude’s call, from his words of Nov 7. Since Nov 8 Opus also makes each fix itself, with no person’s yes, so code checks each fix too, the morning after and in the next settled week.' },
+
+    { about: ['twfix'], kicker: 'The fix, checked · Will, Nov 8',
+      head: 'No person looks at a fix first, so code checks it the morning after, and Opus undoes a fix that breaks the count',
+      visual: { type: 'flow', rows: [
+        { title: 'A fix that works', steps: [['Opus publishes the fix', '', 'next'], ['The morning after, the count is near the record', '', 'next']], end: [['It stays, and the next settled week must match again', '', 'keep']] },
+        { title: 'A fix that breaks the count', steps: [['Opus publishes the fix', '', 'next'], ['The morning after, the count is far from the record', 'none of the real leads, or about twice as many', 'block']], end: [['Opus undoes the fix and tries again', '', 'next']] }] },
+      vcap: 'A week settles {settleDays} days after it ends, so without this check a bad fix could mislead the platform’s bidding for one to two weeks. Far means that the platform counts none of the day’s real leads, or about twice as many. When a day brings no real lead, the check waits for the next lead.' }
   ],
 
   examples: {
@@ -120,8 +136,11 @@ LOGIC.flow({
     OPUS: { tag: 'real', rows: [{ steps: [['C2’s Meta, Nov 1', '', 'opus'], ['Two tags send Lead on every submit', 'since May 20', 'opus']], end: [['The fix is to publish the staged Tag Manager version', '', 'opus']] }], note: 'C2’s Tracking answer of Nov 1, a module test.' },
     PROOF: { tag: 'plan', rows: [{ steps: [['Opus says Meta counts each lead twice since May 20', '', 'opus'], ['Code asks if Meta’s tag counts up to twice the real leads since then', 'from Oct 26 to Nov 1 it counted 7 against 4', 'next']], end: [['It fits, so the answer saves', '', 'next']] }], note: 'The numbers are real, from C2’s trust calendar, read on Nov 7.' },
     AGAIN: { tag: 'plan', rows: [{ steps: [['Opus says the tag went silent', '', 'opus'], ['But code sees Meta’s tag count more leads than came in', '', 'next']], end: [['Refused, because the cause does not explain the gap', '', 'block']] }], note: 'Made up, because no code checks an answer this way yet.' },
-    FIX: { tag: 'plan', rows: [{ steps: [['Opus publishes C2’s staged Tag Manager version', 'the fix it named on Nov 1', 'next'], ['The next settled week', 'Meta’s tag counts each lead once', 'next']], end: [['The counts match again, so Meta is trusted from the day of the fix', '', 'keep']] }], note: 'Made from C2’s fix of Nov 1, which today waits on Will on case #58. No code checks a fix after it goes out yet.' }
+    FIX: { tag: 'plan', rows: [{ steps: [['C2’s Meta, the fix Opus named on Nov 1', 'pause one Meta Lead tag, and fire the other only on the sent form', 'opus']], end: [['Opus publishes the staged Tag Manager version itself', 'with no person’s yes', 'next']] }], note: 'The fix is real, from C2’s Tracking answer of Nov 1. Today it waits on Will on case #58.' },
+    DAY1: { tag: 'plan', rows: [{ steps: [['The morning after C2’s fix', '', 'next'], ['Meta counted 1 Lead for the 1 real lead', '', 'next']], end: [['Near the record, so the fix stays', '', 'keep']] }], note: 'Made up, because no fix goes out this way yet.' },
+    UNDO: { tag: 'plan', rows: [{ steps: [['The morning after a fix', '', 'next'], ['Meta counted none of the 2 real leads', 'the tag that was kept no longer fires', 'block']], end: [['Opus publishes the old Tag Manager version again, and names a new fix', '', 'next']] }], note: 'Made up, because no fix goes out this way yet.' },
+    WEEK: { tag: 'plan', rows: [{ steps: [['The first settled week after C2’s fix', '', 'next']], end: [['The counts match, so Meta is trusted from the day of the fix', '', 'keep']] }], note: 'Made from C2’s fix of Nov 1, which today waits on Will on case #58.' }
   },
 
-  reviewed: { self: '10ea6f6a', above: '7f08998d', on: '2026-11-08' }
+  reviewed: { self: '4300b36f', above: '7f08998d', on: '2026-11-08' }
 });
