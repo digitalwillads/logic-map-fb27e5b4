@@ -3,11 +3,15 @@
 // Change a number here and every page that shows it follows. The parts that use it turn out of date
 // until someone reviews them (node stamp.cjs --check).
 LOGIC.facts({
-  // Clef's lines left with Clef (Will, Nov 7: "Take clef out").
-  jev2: 0.30,     // a block needs Jev's customer chance at or under this
-  jline: 0.40,    // Jev's blind call, one search per request: under this score for Opus's side, the call waits for Will (Will, Nov 6)
-  jquote: 0.30,   // the quote check, one fact per request: a saved fact needs Jev's score for its quote at or over this (Will, Nov 6)
+  // The search term module (~/Projects/search-terms src/lib.rs, read 2026-11-07). Clef's lines left with Clef, and
+  // Jev's and DeepSeek's checks of Opus left with them (Will, Nov 7: "Don't say have another AI check. That's dumb.").
+  batch: 50,      // BATCH: the searches in one batch that Opus judges, each with Google's page (250 before the pages)
+  negBatch: 250,  // NEG_BATCH: the live negatives in one batch; they carry no page
+  pageDollars: '0.002', // PAGE_DOLLARS: one Google page from DataForSEO, in dollars (text, so it shows three places)
+  pageDays: 30,   // PAGE_DAYS: a kept Google page is read again for this many days; an older one is bought again
+  pageRun: '1,000', // PER_RUN: a run buys at most this many pages, the costliest searches first
   qline: 0.50,    // the question check: a question for the client is refused when Jev's chance that the client's words or an open question already answer it is at or over this (Will, Nov 7)
+  wideMax: 0.35,  // JEV_MAX: a phrase or broad negative passes when Jev's chance that a search holding its words is a customer is at or under this (wide.rs)
   maxChars: 80,   // a negative longer than this waits for a person
   maxWords: 10,   // a negative with more words than this waits for a person
   boughtDays: 90, // a search that made a sale in this many days waits for a person

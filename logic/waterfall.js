@@ -3,14 +3,18 @@
 // the daily run, Barbara or a person can call it. Each call first asks if the client is set up; if not, setup starts
 // after the call, and the call goes on (Will, Nov 6: "is client set up to do search term filtering? If yes, it
 // continues ... And if no it goes over to setup"). Will, Nov 7: "Take clef out. I want to keep the code check that
-// means we don't rejudge words. Then let's try adversarial testing": the keyword check, then Opus, then Jev's checks and
-// DeepSeek's second opinion (the Second opinion part). Will, Nov 7: "I also don't want to do any routing. Judge each
-// campaign on itself and stop trying to think of the rest. Really the job of this module is to run one campaign at a
-// time." A call is keep, block or unclear, and no judge reads another campaign.
-// Sources: the design of 2026-11-05, the backtests, the live C2 call of Nov 6, the campaign-type research of Nov 6.
+// means we don't rejudge words." Will, Nov 7: "I also don't want to do any routing. Judge each campaign on itself and
+// stop trying to think of the rest. Really the job of this module is to run one campaign at a time." A call is keep,
+// block or unclear, and no judge reads another campaign. Will, Nov 7 evening: "Don't say have another AI check. That's
+// dumb." He picked "1." (Google's page beside each search: the Google's page part, and DeepSeek's second opinion out),
+// then "1" (Jev's checks out). "If the rule says that his words outrank everything then why are you making more work":
+// the client's own words outrank the site, the card and Google's page. An Opus unclear waits for Will's review. The
+// old Second opinion and Jev checks parts are in retired/2026-11-07-google-page/, never loaded.
+// Sources: the design of 2026-11-05, the backtests, the live C2 call of Nov 6, the campaign-type research of Nov 6, and
+// ~/Projects/search-terms (README: "Google's page", "The second opinion is out", "Jev's checks are out"; its QUEUE).
 LOGIC.flow({
   id: 'waterfall',
-  title: 'The search term module', short: 'Search term module', status: 'Opus judges every search, and DeepSeek gives a second opinion',
+  title: 'The search term module', short: 'Search term module', status: 'Opus judges each search with Google’s page beside it, and Will gets the unclear ones',
   head: 'The search term module',
   chart: [
     'flowchart TB',
@@ -20,21 +24,19 @@ LOGIC.flow({
     'READY{"Is this client set up<br/>for search term<br/>filtering?"}:::code',
     'SETUP["Setup: service list<br/>and cards"]:::will',
     'KW["The keyword check:<br/>a live keyword of the<br/>campaign, word for word?"]:::code',
-    'OPUS["Opus judges the rest,<br/>research first"]:::opus',
-    'P3["Jev checks Opus"]:::code',
-    'SEC["DeepSeek judges<br/>again, blind"]:::deep',
+    'PAGE["Code reads Google\'s<br/>page for the<br/>search\'s words"]:::code',
+    'OPUS["Opus judges the rest,<br/>the client\'s words first"]:::opus',
     'REC["Every verdict goes<br/>in the record"]:::code',
     'SAFE["Safety checks<br/>on each negative"]:::will',
     'end',
-    'OUT(["Hands back: verdicts,<br/>negatives for Will to approve,<br/>questions and cases for Will"]):::block',
+    'OUT(["Hands back: verdicts,<br/>negatives for Will to approve,<br/>unclear searches and<br/>questions for Will"]):::block',
     'CALL --> PICK', 'PICK --> READY',
     'READY -- "yes, or no:<br/>the call goes on" --> KW', 'READY -. "no: setup starts<br/>after the call" .-> SETUP',
-    'KW -- "yes: keep,<br/>no judge" --> REC', 'KW -- "no" --> OPUS',
-    'OPUS --> P3', 'P3 --> SEC',
-    'SEC -- "the two agree" --> REC', 'SEC -- "they still disagree:<br/>a case for Will" --> OUT',
-    'REC -- keeps --> OUT', 'REC -- blocks --> SAFE', 'SAFE --> OUT'
+    'KW -- "yes: keep,<br/>no judge" --> REC', 'KW -- "no" --> PAGE',
+    'PAGE --> OPUS', 'OPUS --> REC',
+    'REC -- "keeps, and the<br/>unclear ones for<br/>Will\'s review" --> OUT', 'REC -- blocks --> SAFE', 'SAFE --> OUT'
   ],
-  links: { CALL: 'call', SETUP: 'setup', PICK: 'searches', READY: 'ready', KW: 'kwcheck', OPUS: 'opus', P3: 'jev', SEC: 'second', REC: 'record', SAFE: 'safety', OUT: 'out' },
+  links: { CALL: 'call', SETUP: 'setup', PICK: 'searches', READY: 'ready', KW: 'kwcheck', PAGE: 'gpage', OPUS: 'opus', REC: 'record', SAFE: 'safety', OUT: 'out' },
   leaves: { call: 'Who calls the module, and with what', searches: 'Pick the searches', ready: 'Is this client set up?', kwcheck: 'Is it a keyword of this campaign?', record: 'The record', out: 'What the module hands back' },
 
   // Each slide belongs to one view: the module's own slides first, then one for each of its rules.
@@ -42,42 +44,57 @@ LOGIC.flow({
     { about: ['waterfall'], kicker: 'In and out',
       head: 'Who calls the module, with what, and what comes back',
       lede: 'The daily run calls it each morning. Barbara or a person can call it any time. A call names an account, a campaign or an ad group. The module judges each new search in it, and hands back the results.',
-      visual: { type: 'flow', rows: [{ steps: [['A caller', 'the daily run, Barbara, or a person', 'code'], ['What to filter', 'an account, a campaign or an ad group', 'code'], ['The module', 'judges each new search, one campaign at a time', 'opus']], end: [['A verdict for each search', 'keep, block or unclear', 'keep'], ['Negatives for Will to approve', 'always on the campaign', 'block'], ['Questions only Will can answer', '', 'will']] }] },
+      visual: { type: 'flow', rows: [{ steps: [['A caller', 'the daily run, Barbara, or a person', 'code'], ['What to filter', 'an account, a campaign or an ad group', 'code'], ['The module', 'judges each new search, one campaign at a time', 'opus']], end: [['A verdict for each search', 'keep, block or unclear', 'keep'], ['Negatives for Will to approve', 'always on the campaign', 'block'], ['Unclear searches and questions for the client', 'Will answers or sends each one', 'will']] }] },
       vcap: 'Each campaign is judged on its own: no judge reads the other campaigns (Will, Nov 7). A call for one ad group judges only the searches of that ad group. Its negatives still go on the campaign (Will, Nov 6).',
       quote: ['this is a module that people could that like can be reached for anytime we need search terms to be filtered', 'Nov 6'] },
     { about: ['waterfall'], kicker: 'Why it exists',
-      head: 'Before Nov 6, Opus judged every search, and nothing checked it',
-      lede: 'Each run sent every search that cost money to Opus, and nothing checked its calls.',
+      head: 'Before Nov 6, Opus judged every search with little to go on, and a second read changed about 1 call in 6',
+      lede: 'Each run sent every search that cost money to Opus, with no research and no page of what searchers want.',
       visual: { type: 'dots', groups: [[25, 'wait', 'got a different call the second time'], [119, 'code', 'got the same call']] },
       vcap: 'The same prompt ran twice on 144 C2 searches.',
       stats: [['7,643', 'search verdicts by Opus in 6 days (Oct 30 to Nov 4)', 'real'], ['1%', 'of its reasons cited any research', 'real']] },
     { about: ['waterfall'], kicker: 'The idea · Will, Nov 7',
-      head: 'Opus settles each search, and a judge that never sees its call checks it',
-      visual: { type: 'flow', rows: [{ steps: [['A new search', 'not a live keyword of its campaign', 'code'], ['Opus', 'judges first, research first', 'opus'], ['DeepSeek', 'judges again, blind', 'deep']], end: [['They agree: the call stands', '', 'keep'], ['They disagree: Opus looks again', '', 'opus'], ['Still no agreement, even after a new fact: Will decides', '', 'will']] }] },
-      vcap: 'Will, Nov 7: no cheaper judge settles searches before Opus. The keyword check stays: a search that is a live keyword of its campaign gets no judge. The second opinion was built on Nov 7 and tested on copies of two records.',
-      quote: ["Then let's try adversarial testing.", 'Nov 7'] },
-    { about: ['waterfall'], kicker: 'Three real searches',
-      head: 'Follow three searches from the Nov 6 call',
+      head: 'Google’s page shows Opus what searchers want, and the client’s own words still come first',
+      visual: { type: 'flow', rows: [{ steps: [['A new search', 'not a live keyword of its campaign', 'code'], ['Google’s page', 'what most people who type these words want', 'code'], ['Opus', 'the client’s words first, then the page', 'opus']], end: [['Keep, and it is done', '', 'keep'], ['Block, then the safety checks and Will’s approval', '', 'block'], ['Unclear, and Will decides', '', 'will']] }] },
+      vcap: 'Google ranks what people click and read, so its page shows what most of the people who type the words want. The client’s own words still outrank it, so the page decides only what his words do not cover. The keyword check stays, and a search that is a live keyword of its campaign gets no judge.' },
+    { about: ['waterfall'], kicker: 'What changed on Nov 7',
+      head: 'Two checks of Opus came out, and Opus got Google’s page and the client’s words first',
+      visual: { type: 'gate', rows: [
+        ['DeepSeek’s second opinion', 'out, because with the page Opus settled the searches the two had argued over', 'stop'],
+        ['Jev’s checks of Opus', 'out, because Jev reads only the words, so it argued with blocks the page backs', 'stop'],
+        ['Google’s page beside each search', 'in, at ${pageDollars} a page, kept {pageDays} days', 'pass'],
+        ['The client’s own words', 'in, and they outrank the site, the card and the page', 'pass'],
+        ['Smaller batches', 'in, {batch} searches a batch instead of 250', 'pass'],
+        ['The cards', 'in, they follow the client’s places and name no other campaign', 'pass']], end: ['Every negative still waits for Will’s approval', 'will'] },
+      vcap: 'All of it was built and merged on Nov 7 in the module’s own project. The code’s checks of each negative stay, and so does Jev’s check of each question for the client.',
+      quote: ["Don't say have another AI check. That's dumb.", 'Nov 7'] },
+    { about: ['waterfall'], kicker: 'Four real searches',
+      head: 'Follow four real searches through the module',
       lede: 'Pick a search. Watch where it goes, and why.',
       visual: { type: 'journey', runs: [
         { name: 'music advertising agencies', out: 'keep', steps: [
-          ['A new search', 'LA + New York. It cost money and has no verdict yet.'],
-          ['Set up for filtering?', 'Yes: C2 has a service list and 8 cards.'],
+          ['A new search', 'LA + New York, Nov 6. It cost money and has no verdict yet.'],
+          ['Set up for filtering?', 'Yes, C2 has a service list and 8 cards.'],
           ['The keyword check', 'It is an exact keyword of LA + New York, word for word.'],
           ['Kept, with no judge', 'No judge reads it.'],
           ['The record', 'Done. A keep needs no negative.']] },
-        { name: 'creative music agency', out: 'keep', steps: [
-          ['A new search', 'LA + New York. It cost money and has no verdict yet.'],
-          ['The keyword check', 'Not a keyword of the campaign.'],
-          ['Opus, research first', 'Opus kept it on Nov 6.'],
-          ['DeepSeek judges again', 'It also kept it, in the test of Nov 7.'],
-          ['The record', 'Done. A keep needs no negative.']] },
+        { name: 'music press release', out: 'block', steps: [
+          ['A search the campaign kept', 'National Sep 2026. Its new card of Nov 7 sent it back to Opus.'],
+          ['Google’s page', 'Code read it. The page is templates, examples and guides for writing your own release.'],
+          ['Opus, the client’s words first', 'C2 sells full PR campaigns, not do-it-yourself help. Block.'],
+          ['The record', 'Jev held the block that evening, at 0.12. With Jev’s checks out, the block stands.'],
+          ['Safety checks', 'The campaign is paused, so no negative is owed yet. When it is on, the negative goes on Will’s case.']] },
+        { name: 'music marketing campaigns', out: 'wait', steps: [
+          ['A search the campaign kept', 'Los Angeles. Its new card of Nov 7 sent it back to Opus.'],
+          ['Google’s page', 'Code read it. The page mostly lists famous campaigns to study.'],
+          ['Opus, the client’s words first', 'The words name what C2 runs, but the searcher may want examples, not a firm. Unclear.'],
+          ['The record', 'Held for Will’s review, so no negative of any kind goes out.'],
+          ['Will decides', 'It is one of the 13 unclear searches of Nov 7. His answer stands.']] },
         { name: 'dawn miller pr', out: 'block', steps: [
-          ['A new search', 'LA + New York. It cost money and has no verdict yet.'],
+          ['A new search', 'LA + New York, Nov 6, before Google’s page. It cost money and has no verdict yet.'],
           ['The keyword check', 'Not a keyword of the campaign.'],
-          ['Opus, research first', 'Opus researched it: a rival’s name, not for this campaign.'],
-          ['DeepSeek judges again', 'It also blocked it, in the test of Nov 7.'],
-          ['Safety checks', 'The limits, a sale, a keyword of this campaign, then Jev’s second look.'],
+          ['Opus, research first', 'Opus researched it. It is a rival’s name, not for this campaign.'],
+          ['Safety checks', 'The limits, a sale, and a keyword of this campaign.'],
           ['Will approves', 'Will kept it blocked on Nov 6.']] }
       ] } },
     { about: ['waterfall'], kicker: 'Campaign types · built Nov 7',
@@ -110,7 +127,7 @@ LOGIC.flow({
     { about: ['searches'], kicker: 'Pick the searches',
       head: 'Only new searches that cost money go in. Every other search already has a verdict.',
       visual: { type: 'dots', groups: [[253, 'code', 'already had a verdict'], [8, 'opus', 'new, cost money: judged on Nov 6']] },
-      vcap: 'C2, Nov 6: 261 searches, 8 of them new. A search Opus called unclear goes in again after 7 days.',
+      vcap: 'C2, Nov 6: 261 searches, 8 of them new. A search that Opus called unclear waits for Will’s review, and no run picks it again until he answers.',
       quote: ["if you checked all the months search terms don't do that again. Just the new ones.", 'Oct 30'] },
     { about: ['ready'], kicker: 'Set up?',
       head: 'Each call asks if setup is done, and a no never stops the call',
@@ -135,12 +152,12 @@ LOGIC.flow({
       vcap: 'The other 8: three more pumps for liquids, two Korean pump searches, and ADI’s own names in three more campaigns. A keyword’s search never gets a negative by itself: the negatives step makes it wait (“pause the keyword instead”). But with the check, Opus no longer sees these searches. ADI’s answer to its client question on pumps for liquids also tells if those pump keywords should stay.' },
     { about: ['record'], kicker: 'The record',
       head: 'Each verdict says who decided and why, so no search is judged twice',
-      visual: { type: 'card', title: 'One line of the record (from the Nov 6 call)', fields: [['Search', 'pritanmg com'], ['Campaign', 'LA + New York'], ['Verdict', 'block'], ['By', 'Opus'], ['Why', 'one plain sentence about the words, never cost or clicks'], ['Day', 'Nov 6']], stamp: ['A verdict stands. An unclear is judged again in 7 days.', 'code'] },
-      vcap: 'Opus’s verdicts and Will’s answers go in the same record, each marked with who decided. DeepSeek’s call on a search goes in too, beside Opus’s. An old route in the record counts as a block for its own campaign.' },
+      visual: { type: 'card', title: 'One line of the record (from the Nov 6 call)', fields: [['Search', 'pritanmg com'], ['Campaign', 'LA + New York'], ['Verdict', 'block'], ['By', 'Opus'], ['Why', 'one plain sentence about the words, never cost or clicks'], ['Day', 'Nov 6']], stamp: ['A verdict stands. An unclear waits for Will, and his answer stands.', 'code'] },
+      vcap: 'Opus’s verdicts and Will’s answers go in the same record, each marked with who decided. An Opus unclear goes in held for Will’s review, so no negative of any kind goes out for it until he answers. An old route in the record counts as a block for its own campaign. Old lines stay as written, but a hold that only Jev made no longer counts, so C2’s 16 blocks of Nov 7 that Jev held now stand.' },
     { about: ['out'], kicker: 'What comes back',
       head: 'The module hands back three things, and changes nothing by itself',
-      visual: { type: 'flow', rows: [{ steps: [['The Nov 6 call', '8 new searches', 'code']], end: [['A verdict for each search', '261 of 261 have one', 'keep'], ['Negatives for Will to approve', '2 ready, on a case', 'block'], ['Questions and cases for Will', 'a question for the client, or a search the judges still disagree on', 'will']] }] },
-      vcap: 'No negative goes live from the module. A negative goes live only after Will approves its case. Built Nov 7: a negative whose call rests on what the client sells first needs the client’s own words, or a question for the client (Safety checks). Being built: a search where Opus and DeepSeek still disagree also comes back on Will’s case.' }
+      visual: { type: 'flow', rows: [{ steps: [['The Nov 6 call', '8 new searches', 'code']], end: [['A verdict for each search', '261 of 261 have one', 'keep'], ['Negatives for Will to approve', '2 ready, on a case', 'block'], ['Unclear searches and questions for the client', 'Will answers or sends each one', 'will']] }] },
+      vcap: 'No negative goes live from the module. A negative goes live only after Will approves its case. A negative whose call rests on what the client sells first needs the client’s own words, or a question for the client. Each search Opus called unclear comes back on Will’s review list. On Nov 7, C2’s list held 13.' }
   ],
 
   examples: {
@@ -149,14 +166,14 @@ LOGIC.flow({
     PICK: { tag: 'real', rows: [{ steps: [['pay for radio play', 'LA + New York · cost money · no verdict yet', 'code'], ['Pick the searches in it', 'it is new: it goes in', 'code']], end: [['Into the module', 'one campaign at a time', 'opus']] }], note: 'C2, Nov 6: 8 new searches went in. Every other search already had a verdict.' },
     READY: { tag: 'real', rows: [{ steps: [['C2, Nov 6, 1:19 PM', 'a service list and 8 cards', 'will'], ['Set up for filtering?', 'yes', 'code']], end: [['The keyword check, then Opus with the cards', '', 'opus']] }], note: 'With a no, Opus judges all, as before, and setup starts after the call. Every client but C2 gets a no today.' },
     KW: { tag: 'real', rows: [{ steps: [['music advertising agencies', 'an exact keyword of LA + New York', 'code'], ['Is it a keyword of this campaign?', 'yes, word for word', 'code']], end: [['keep, no judge', '', 'keep']] }], note: 'C2, the replay of the Nov 6 call. Opus had kept it too.' },
-    OPUS: { tag: 'real', rows: [{ steps: [['dawn miller pr', 'not a keyword: on to Opus', 'code'], ['Opus researches it', 'a rival’s name', 'opus']], end: [['Not for this campaign: block', 'its route of Nov 6 counts as a block', 'block']] }], note: 'C2, Nov 6: Opus judged it with research.' },
-    P3: { tag: 'real', rows: [{ steps: [['symphony music marketing', 'Opus: block', 'opus'], ['Jev judges it alone', 'its score for the block: 0.21', 'code']], end: [['Under {jline}: held for Will', '', 'will']] }], note: 'The end-to-end run of Nov 6, on a copy of the record. Built in the new project; not live yet.' },
-    SEC: { tag: 'real', rows: [{ steps: [['knf air pump', 'Opus: keep, Nov 1', 'opus'], ['DeepSeek judges it again', 'it never sees Opus’s keep', 'deep']], end: [['Block: not the same', 'Opus looks again', 'next']] }], note: 'From the test of Nov 7, on a copy of ADI’s record.' },
+    PAGE: { tag: 'real', rows: [{ steps: [['music press release', 'not a keyword of National Sep 2026', 'code'], ['Code reads Google’s page', '${pageDollars}, kept {pageDays} days', 'code']], end: [['Beside the search for Opus', 'templates, examples and guides to write your own', 'opus']] }], note: 'C2, Nov 7: each of the 230 searches that the 5 new cards sent back to Opus went with its page. Their 173 different words cost $0.35.' },
+    OPUS: { tag: 'real', rows: [{ steps: [['music press release', 'with Google’s page beside it', 'code'], ['Opus, the client’s words first', 'C2 sells full PR campaigns', 'opus']], end: [['Block', 'the page shows people who write their own', 'block']] }], note: 'C2, Nov 7, on National Sep 2026, after its new card.' },
     REC: { tag: 'real', rows: [{ steps: [['creative music agency', 'Opus: keep', 'opus'], ['The record', 'marked as Opus’s', 'code']], end: [['Done', 'a keep needs no negative', 'keep']] }], note: 'After the Nov 6 call, all 261 C2 searches had a verdict.' },
-    SAFE: { tag: 'real', rows: [{ steps: [['dawn miller pr', 'a block on LA + New York', 'block'], ['The safety checks', 'the limits, a sale, a keyword, Jev', 'will']], end: [['Will kept it blocked', 'Nov 6', 'will']] }], note: 'C2, Nov 6.' },
+    SAFE: { tag: 'real', rows: [{ steps: [['dawn miller pr', 'a block on LA + New York', 'block'], ['The safety checks', 'the limits, a sale, a keyword', 'will']], end: [['Will kept it blocked', 'Nov 6', 'will']] }], note: 'C2, Nov 6.' },
     OUT: { tag: 'real', rows: [
-      { steps: [['2 ready negatives', 'Jev 0.25 and 0.16', 'block'], ['A case for Will', 'each negative and why', 'code']], end: [['Live after Will approves', '', 'block']] }], note: 'From the Nov 6 call: 261 searches with a verdict, and 2 negatives ready.' }
+      { title: 'Negatives', steps: [['2 ready negatives', 'the Nov 6 call', 'block'], ['A case for Will', 'each negative and why', 'code']], end: [['Live after Will approves', '', 'block']] },
+      { title: 'Unclear searches', steps: [['13 unclear searches', 'C2, Nov 7', 'opus'], ['Will’s review list', 'no negative while they wait', 'will']], end: [['Will’s answer stands', '', 'will']] }], note: 'The Nov 6 call left 261 searches with a verdict, and 2 negatives ready. On Nov 7, 13 unclear searches waited for Will.' }
   },
 
-  reviewed: { self: '7444e928', on: '2026-11-07' }
+  reviewed: { self: '22d933ee', on: '2026-11-07' }
 });
