@@ -160,17 +160,33 @@
     // The bid and budget module adds its goal ids: the audit's bidding and budget goals, and the daily check's.
     // The client module adds the goal ids of the inbox, meetings and CRM trees.
     var DESIG = /\b(F[1-4]|J[12])\b|\bPart \d\b|\b(GA\d{2,}|AR\d+|MA\d+)\b|\bct-(real|once|primary|values|offline)\b|\b(tracking-works|uet-live|goals-right|sources-read|dataset-right|fires-on-site|optimizes-on-real|counted-once|values-present|conversions-api|instant-forms|settings-as-planned|tag-alive|changes-caught|trust-calendar|past-broken-days-found)\b|\b(ct|tc|pb|co|ca|fs|or|vp|if|sp|ta|cc|dr|sr)-[a-z0-9]+-[a-z0-9-]+\b|\bbb-[a-z0-9]+(-[a-z0-9]+)*\b|\b(bids-fit-targets|cpc-near-norm|budgets-ready|account-can-spend)\b|\b(clients-answered|prospects-answered|teammates-answer|no-google-reps|no-cold-pitches|machine-filed|cleanup-never-hides|sources-loaded|matched-right|transcript-read|items-complete|proposals-reviewed|tasks-done-on-time|decisions-in-notebook|sales-next-step|item-shows-source|write-(right-target|fields-allowed|values-valid|backed-by-source|keeps-record-passing|not-destructive|once|read-back|routed)|prospect-(named|not-paying|not-stale)|onboarding-(record-complete|contract-billing|plan|not-stuck)|active-(record-complete|billed|plan-contract|not-leaving)|client-set-up|family-known|payment-attributed|plan-resolved|payment-matches-plan|plan-sources-agree|link-well-formed|link-owner-valid|links-agree|mirror-whole|results-explained|alerts-once)\b/;
+    // Show it here; never send the reader to another part for it (Will, Nov 7, on "The five rules are in the part on
+    // which days count.": "Why is this not showing me the 5 rules? Thatas dumb").
+    var POINTER = /\b(?:are|is|sits?|lives?)\s+(?:listed\s+|shown\s+|explained\s+|described\s+)?(?:in|under)\s+(?:the|its|their|another)\s+(?:\w+\s+)?(?:part|slides?|view)\b|\bsee\s+(?:the|its|their)\s+(?:\w+\s+)?(?:part|slides?|view)\b|\b(?:listed|shown|explained|described)\s+(?:in|under)\s+(?:the|its|another)\s+(?:\w+\s+)?(?:part|slides?|view)\b/i;
+    // No robot speak (Will, Nov 7: "It's sound like robot speak"): no chain of colons, and no coined name where plain words
+    // belong. His real case: "So: a new break: Opus answers for KDX's Google". A quote of someone's own words is exempt.
+    // shortcut: only the modules rewritten in plain words fail it; each rebuild adds its module, until all four are in.
+    var PLAIN = ['tracking'];
+    var COINED = /\bbrief\b|\bknown break\b|\bBarbara’s (?:weeks|list)\b|\bweek rules\b/i;
     Object.keys(FLOWS).forEach(function (id) {
-      var shown = [];
-      var walk = function (v, key) {
+      var shown = [], quoted = [];
+      var walk = function (v, key, q) {
         if (key === 'links' || key === 'about' || key === 'reviewed' || key === 'parent' || key === 'id' || key === 'chart') return;
-        if (typeof v === 'string') shown.push(v);
-        else if (Array.isArray(v)) v.forEach(function (x) { walk(x); });
-        else if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k], k); });
+        q = q || key === 'quote';
+        if (typeof v === 'string') (q ? quoted : shown).push(v);
+        else if (Array.isArray(v)) v.forEach(function (x) { walk(x, null, q); });
+        else if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k], k, q); });
       };
       walk(FLOWS[id]);
       (FLOWS[id].chart || []).forEach(function (l) { (l.match(/"[^"]*"/g) || []).forEach(function (q) { shown.push(q); }); });
-      shown.filter(function (t) { return DESIG.test(t); }).forEach(function (t) { problems.push(id + ': a designator in “' + t.slice(0, 70) + '”: use the plain name'); });
+      var all = shown.concat(quoted);
+      all.filter(function (t) { return DESIG.test(t); }).forEach(function (t) { problems.push(id + ': a designator in “' + t.slice(0, 70) + '”: use the plain name'); });
+      all.filter(function (t) { return POINTER.test(t); }).forEach(function (t) { problems.push(id + ': “' + t.slice(0, 70) + '” sends the reader to another part: show it here'); });
+      if (PLAIN.indexOf(pathOf(id)[0]) >= 0) shown.forEach(function (t) {
+        if ((t.replace(/\d:\d\d|https?:/g, '').match(/:/g) || []).length > 1) problems.push(id + ': “' + t.slice(0, 70) + '” chains colons: say it in sentences');
+        var c = t.match(COINED);
+        if (c) problems.push(id + ': “' + t.slice(0, 70) + '” uses the coined name “' + c[0] + '”: say it in plain words');
+      });
     });
     // Each part sits under the part that opens it, and each box opens a rule of its own part or a part below it.
     Object.keys(FLOWS).forEach(function (id) {

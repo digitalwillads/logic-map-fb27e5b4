@@ -12,17 +12,15 @@ LOGIC.facts({
   maxWords: 10,   // a negative with more words than this waits for a person
   boughtDays: 90, // a search that made a sale in this many days waits for a person
 
-  // The tracking module (comm-chat and the verifiers' trees, read 2026-11-07).
+  // The tracking module (comm-chat and the verifiers' trees, read 2026-11-07; rebuilt the same day).
   freshDays: 7,   // an answer counts for the modules after it this many New York days (modules/mod.rs FRESH_DAYS)
-  runHours: 24,   // the check run an answer names must be under this many hours old (modules/run.rs MAX_AGE_MS)
   waitFloor: 0.30, // an action waits for Will's mark only when Jev's chance that it counts is at least this (scorecard WAITING_JEV_FLOOR)
   markYes: 0.70,  // Jev's read of Will's words saves a mark only at or over this, a clear yes (chat/jev.rs UNCERTAIN)
   boxWeeks: 2,    // the spend box lets a run raise Google spend only while this many newest full weeks are trusted (spend_box TRUST_WEEKS)
-  pickDays: 90,   // the rule that fills a blank main conversion reads this many settled days (results/main_pick.rs DAYS)
-  pickEnough: 10, // a ranked action needs this many conversions in those days (main_pick ENOUGH)
+  settleDays: 7,  // a week counts once it ended this many days ago (results/compute.rs SETTLE_DAYS)
   gapLeads: 3,    // a lead-app week matches Google when the gap is under this many leads (lead_match/weeks.rs GAP_LEADS)
-  gapShare: 0.30, // and under this share of the real leads (GAP_SHARE)
-  auditLine: 0.80, // the line of every Jev check in the tracking trees (min_p); each reports only until Will approves it
+  gapPct: 30,     // and under this % of the real leads (GAP_SHARE 0.30)
+  valuePct: 20,   // the plan's value match: a week's sale value within this % of the store's sales, the audit's own line (google-ads-audit.toml ct-values-1-2)
 
   // The client module (comm-chat src/modules: mod.rs, day.rs, brief/, client_profile/client_words.rs, chat/tools/module_tools.rs; the verifiers' inbox tree; read 2026-11-07).
   clientFresh: 7,       // FRESH_DAYS: an answer counts this many New York days, so the module runs at least this often (mod.rs:59)

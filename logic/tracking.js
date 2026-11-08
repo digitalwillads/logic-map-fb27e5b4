@@ -1,140 +1,99 @@
-// The tracking module: step 1 of Barbara's daily client run, with the question "Can we trust the tracking?" (Will,
-// 2026-11-07: "Lets do tracking next"). This maps it as it works today, so Will can argue its logic box by box.
-// Sources (comm-chat, read 2026-11-07): src/modules/mod.rs (the module, its words, ACCOUNT_FACTS, FRESH_DAYS),
-// src/modules/day.rs (what is due), src/modules/brief/ (the brief), src/chat/tools/module_tools.rs (the save),
-// src/chat/tools/mark_tools.rs, src/chat/tools/trust_calendar.rs, docs/claude-code-bridge-setup.md:2254-2263 (the
-// switch); the verifiers' verify/src/modules.rs and trees; Barbara's Tracking answers of Nov 1 (Bull, Kogalla, C2).
-// Will's notes of 2026-11-07 on this chart (not built): "Is it due today?" goes ("I want it to check that it hasen't broken
-// via code ever time it's called"); Will's marks go ("I want this automated. Opus should choose"); and "IT would make
-// sense to have this split by platform yes?" (Claude: yes). So each platform runs on its own, code checks it on each call,
-// and Opus answers only a new break.
+// The tracking module, rebuilt on 2026-11-07 around one job. Will, Nov 7: "At the end of the day I think the main thing I
+// want it to do is provide validation that the conversion tracking is working correctly"; and "build this as if we can
+// always read the real leads and orders. If we don't have access now we will get it". So each platform's count is proved
+// against the client's own record of what really happened, and a day that does not match is explained and rebuilt from
+// the record. Earlier words that still hold: Nov 7, "I want it to check that it hasen't broken via code ever time it's
+// called" and "IT would make sense to have this split by platform yes?"; Oct 30, "Just the new ones".
+// Sources (comm-chat, read 2026-11-07): src/lead_match/read.rs:30-34 (the two lead apps), weeks.rs:16-52 (the weekly match),
+// mod.rs:1-6 (a gap week is not trusted); src/modules/mod.rs:119-138 (Tracking's words, who needs it), day.rs:108-156 (today's
+// due day); src/modules/finish.rs:1-3 and :40-55 (Decide's proposals become the run's cases); the memory note of the Nov 4 dry
+// run (380M against 192M tokens). Barbara, read 2026-11-07: client_leads weeks of C2 (13) and Bull Legal (2), C2's trust
+// calendar (Meta), KDX's Tracking brief, the cases #58 and #260; Tracking's answers of Nov 1. The old parts:
+// retired/2026-11-07-tracking-redo/.
 LOGIC.flow({
   id: 'tracking',
-  title: 'The tracking module', short: 'Tracking module', status: 'Built, off in live; Nov 7 changes not built',
-  head: 'The tracking module: can we trust the tracking?',
+  title: 'The tracking module', short: 'Tracking module', status: 'Partly built; the rest is not built yet',
+  head: 'Tracking works when each platform’s count matches what really happened',
   chart: [
     'flowchart TB',
-    'CALL(["Called each morning at step 1<br/>of the daily run, or by a person<br/>as a module test"]):::code',
-    'subgraph MOD[" "]',
-    'GOO(["Google"]):::next',
-    'MET(["Meta"]):::next',
-    'MSF(["Microsoft"]):::next',
-    'MARKS["Not built: Opus chooses<br/>which actions count"]:::next',
-    'FACTS["Code reads the facts<br/>of the platform"]:::code',
-    'CHECKS["The tracking checks run,<br/>and their run goes to Barbara"]:::will',
-    'BROKE{"Not built: code checks<br/>each call: has it broken?"}:::next',
-    'TRUST["The trust calendar marks each<br/>day trusted, suspect or broken"]:::will',
-    'OPUS["Opus answers: can the<br/>platform\'s count be trusted,<br/>and from which day?"]:::opus',
-    'SAVE{"Code checks the answer:<br/>does it pass every rule?"}:::code',
-    'end',
-    'OKAY(["Not broken:<br/>trusted"]):::code',
-    'STAND(["The last answer<br/>stands"]):::code',
-    'OUT(["Handed on, one result for<br/>each platform: the campaign<br/>modules and Decide judge on it"]):::code',
-    'CALL --> GOO', 'CALL --> MET', 'CALL --> MSF',
-    'GOO --> FACTS', 'MET --> FACTS', 'MSF --> FACTS', 'MARKS --> FACTS',
-    'FACTS --> CHECKS', 'CHECKS --> BROKE',
-    'BROKE -- no --> OKAY', 'BROKE -- "a known break" --> STAND', 'BROKE -- "a new break" --> OPUS',
-    'TRUST --> OPUS', 'OPUS --> SAVE',
-    'SAVE -- "no: refused, with why" --> OPUS',
-    'SAVE -- yes --> OUT', 'OKAY --> OUT', 'STAND --> OUT'
+    'CALL(["Every morning, and on every call:<br/>Google, Meta and Microsoft,<br/>each one on its own"]):::next',
+    'COUNT["What the platform counted:<br/>its conversions by day and by<br/>campaign, and which actions count"]:::code',
+    'TRUTH["What really happened: the<br/>client’s own leads and sales,<br/>each with its ad click"]:::next',
+    'MATCH{"Do they match, in<br/>count and in value?"}:::next',
+    'WORKS(["Tracking works, and the<br/>numbers are safe to use"]):::keep',
+    'WHY["Find out why it broke"]:::next',
+    'REBUILD["Rebuild the true numbers<br/>from the client’s record"]:::next',
+    'CASE(["The fix goes on a case<br/>for a person"]):::will',
+    'HAND(["Hand on one answer for each<br/>platform: which days to trust,<br/>and the true numbers"]):::next',
+    'CALL --> COUNT', 'CALL --> TRUTH',
+    'COUNT --> MATCH', 'TRUTH --> MATCH',
+    'MATCH -- yes --> WORKS', 'MATCH -- no --> WHY',
+    'WHY --> REBUILD', 'WHY --> CASE',
+    'WORKS --> HAND', 'REBUILD --> HAND'
   ],
-  links: { CALL: 'tcall', BROKE: 'tbroken', MARKS: 'tmarks', FACTS: 'tfacts', CHECKS: 'tchecks', TRUST: 'ttrust', OPUS: 'tanswer', SAVE: 'tsave', OUT: 'thand' },
-  leaves: { tcall: 'Who calls it, and when', thand: 'Who judges on the answer' },
+  links: { CALL: 'tcall', COUNT: 'tcount', TRUTH: 'ttruth', MATCH: 'tmatch', WHY: 'twhy', REBUILD: 'trebuild', HAND: 'thand' },
+  leaves: { tcall: 'Every morning, each platform on its own' },
 
-  // Each slide belongs to one view: the module's own slides first, then one or more for each of its rules.
+  // Each slide belongs to one view: the module's own slides first, then the slides of its rule.
   deck: [
-    { about: ['tracking'], kicker: 'In and out',
-      head: 'Each platform on its own: code checks it on each call, and Opus answers only a new break',
-      lede: 'Tracking is step 1 of the daily client run. It changes nothing. It only answers, with one result for each platform.',
+    { about: ['tracking'], kicker: 'The idea',
+      head: 'A platform’s count is only its own claim, so Tracking holds it up against what really happened',
       visual: { type: 'flow', rows: [
-        { title: 'Google', steps: [['Code checks', 'each call, no tokens', 'code'], ['Not broken', '', 'code']], end: [['Trusted', '', 'keep']] },
-        { title: 'Meta', steps: [['Code checks', 'each call, no tokens', 'code'], ['A new break', '', 'block'], ['Opus answers', 'for Meta alone', 'opus']], end: [['Not trusted, with its fix', '', 'block']] },
-        { title: 'Microsoft', steps: [['Code checks', 'each call, no tokens', 'code'], ['A known break', 'the last answer named it', 'block']], end: [['The last answer stands', '', 'code']] }] },
-      vcap: 'Not built yet: today one Opus subagent answers for the whole account when Tracking is due. A problem always names its fix. A person or a later step makes the change, never the module.',
-      quote: ['IT would make sense to have this split by platform yes?', 'Nov 7'] },
+        { title: 'C2’s Google, the week of Oct 19', steps: [['Google counted 3 leads', '', 'code'], ['The lead app took 3 real leads from Google clicks', '', 'keep']], end: [['They match, so Google’s count is true', '', 'keep']] },
+        { title: 'C2’s Meta, Oct 26 to Nov 1', steps: [['Meta’s tag counted 7 leads', 'from every visitor to the site', 'code'], ['The lead app took 4 leads in all', 'from every source', 'block']], end: [['They do not match: Meta’s tag counts some leads twice', '', 'block']] }] },
+      vcap: 'Each platform grades its own work, so its count proves nothing by itself. The client’s own record of leads and sales holds what really happened, so that record is the proof.',
+      quote: ['At the end of the day I think the main thing I want it to do is provide validation that the conversion tracking is working correctly.', 'Nov 7'] },
     { about: ['tracking'], kicker: 'Why it comes first',
-      head: 'A wrong count misleads every module after it, so Tracking answers first',
+      head: 'Every module after Tracking judges on the count, so a wrong count misleads all of them',
       visual: { type: 'flow', rows: [
-        { title: 'C2, Meta', steps: [['Two tags send each lead twice', 'since May 20', 'block'], ['Tracking: Meta’s count is not trusted', 'Nov 1', 'opus']], end: [['Results judges Meta on clicks, landing page views and GA4 leads', '', 'keep']] },
-        { title: 'C2, Google', steps: [['Each Google lead matches a send in the lead app', 'from Oct 1', 'code'], ['Tracking: Google’s count is true from Oct 1', 'Nov 1', 'opus']], end: [['Results calls September’s 4.5 conversions no true count', '', 'keep']] }] },
-      vcap: 'C2’s module tests of Nov 1. Each campaign answer names the Tracking answer as its source.' },
+        { title: 'C2’s Meta', steps: [['Two tags send each lead twice', 'since May 20', 'block'], ['Tracking says Meta’s count cannot be trusted', 'Nov 1', 'opus']], end: [['Results judges Meta on clicks, landing page views and GA4’s leads instead', '', 'keep']] },
+        { title: 'C2’s Google', steps: [['Each Google lead matches a lead in the lead app', 'from Oct 1', 'code'], ['Tracking says Google’s count is true from Oct 1', 'Nov 1', 'opus']], end: [['Results does not judge on September’s 4.5 conversions', '', 'keep']] }] },
+      vcap: 'These are C2’s module tests of Nov 1. Each campaign answer names Tracking’s answer as its source, so a count that nobody had checked would have misled every one of them.' },
     { about: ['tracking'], kicker: 'Status · Nov 7',
-      head: 'Built and tested on three clients. Live keeps the module run off until Will says yes.',
+      head: 'Today the match runs for two clients on Google, and most of this design is not built yet',
       visual: { type: 'timeline', items: [
-        ['Oct 31', 'Will: “Build them all so I can start testing and clearing each module”. The ten client modules are built.'],
-        ['Nov 1', 'Module tests on Bull Legal, C2 and Kogalla: three Tracking answers, saved from 3:29 to 3:33 AM.'],
-        ['Nov 1 and Nov 2', 'The verifiers run the tracking checks six times for these three clients.'],
-        ['Nov 4', 'Will: “we should just run it yes?” The module run joins the daily run, first as a dry run on a copy.'],
-        ['Nov 7', 'The change is merged. Live keeps the morning module run off until Will tests it and says yes to its cost.'],
-        ['Nov 7, on this map', 'Will: each platform on its own, a code check on each call in place of the due day, and Opus chooses which actions count. Not built yet.']] },
-      vcap: 'A module test still runs in live: Will presses Run on Validators, Modules. Only the morning module run is off.' },
-    { about: ['tracking'], kicker: 'Three answers · Nov 1',
-      head: 'The first three answers: two good, and one problem with its fixes',
-      visual: { type: 'gate', rows: [
-        ['Bull Legal: good', 'Google’s form count matches the lead app and GA4 week by week, from May 11.', 'pass'],
-        ['Kogalla: good', 'Google, GA4 and Shopify’s server feed fell together in October, so the fall is real.', 'pass'],
-        ['C2: a problem', 'Google’s count is true from Oct 1. Meta’s is not: two tags send each lead from the contact form twice.', 'hold']],
-        end: ['The campaign modules judge on these', 'opus'] },
-      vcap: 'Barbara keeps each answer. Will marks it Right or Wrong on Validators, Modules.' },
+        ['Oct 30', 'Will asks for the lead match, so each morning Barbara reads C2’s and Bull Legal’s lead apps and sets each week’s real leads beside Google’s count.'],
+        ['Nov 1', 'The first module tests: Tracking answers for Bull Legal, Kogalla and C2.'],
+        ['Nov 4', 'The module run joins the daily run, first as a dry run on a copy.'],
+        ['Nov 7', 'The module run is merged, but it stays off in live until Will tests it and says yes to its cost.'],
+        ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.']] },
+      vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Four things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, and the rebuild.' },
 
-    { about: ['tcall'], kicker: 'Who calls it',
-      head: 'The daily run calls it at step 1, beside The client and Setup and market',
+    { about: ['tcall'], kicker: 'Every call',
+      head: 'Code checks each platform every time the module is called, and that check costs no tokens',
       visual: { type: 'flow', rows: [
-        { title: 'The daily run', steps: [['Step 0', 'code reads the day, and answers In motion and Money', 'code'], ['Step 1, all at once', 'Tracking, The client, Setup and market', 'opus'], ['Step 2', 'the campaign modules, on each campaign', 'opus']], end: [['Step 3: Decide', '', 'opus']] },
-        { title: 'A module test', steps: [['Will presses Run', 'one module, one client', 'will'], ['The module runs', 'it changes nothing', 'opus']], end: [['An answer for Will to mark', '', 'will']] }] },
-      vcap: 'Each line of a step is one subagent. Tracking needs no other answer, so it can run first.',
-      quote: ['we should just run it yes?', 'Nov 4'] },
-    { about: ['tcall'], kicker: 'Why it is off in live',
-      head: 'A module run read about twice the tokens of a full run',
+        { title: 'Bull Legal’s Google', steps: [['Code sets the count beside the lead app', 'the newest settled weeks match', 'code']], end: [['Tracking works, so Opus does not start', '', 'keep']] },
+        { title: 'C2’s Meta', steps: [['Code sets the count beside the lead app', 'Meta’s tag counts more leads than came in', 'block'], ['An answer already explains it', 'Nov 1', 'code']], end: [['Nothing new, so Opus does not start', '', 'code']] },
+        { title: 'KDX’s Google', steps: [['Code finds a warning sign', 'two actions changed how they count on Oct 28', 'block'], ['No answer explains it yet', '', 'code']], end: [['Opus starts, for KDX’s Google alone', '', 'opus']] }] },
+      vcap: 'None of this is built yet. Today Tracking runs only when it is due, such as when its last answer turns {freshDays} days old. Each row is a real finding of Nov 1 to Nov 7, and only KDX needs Opus, because no answer explains its break yet.',
+      quote: ["I want it to check that it hasen't broken via code ever time it's called", 'Nov 7'] },
+    { about: ['tcall'], kicker: 'Each platform on its own',
+      head: 'Each platform gets its own answer, so a break on Meta never holds up Google',
+      visual: { type: 'flow', rows: [
+        { title: 'C2’s Google', steps: [['It matches the lead app in every settled week from Oct 5', '', 'code']], end: [['Trusted from Oct 1', '', 'keep']] },
+        { title: 'C2’s Meta', steps: [['Its tag counts more leads than came in', 'two Meta Lead tags on each form since May 20', 'block']], end: [['Not trusted, and its fix waits on a person', 'case #58', 'block']] }] },
+      vcap: 'Today one Opus subagent answers for the whole account, so C2’s answer of Nov 1 had to cover both platforms at once. Split by platform, Google’s answer stands on its own while Meta waits for its fix.',
+      quote: ['IT would make sense to have this split by platform yes?', 'Nov 7'] },
+    { about: ['tcall'], kicker: 'Today',
+      head: 'Today Tracking runs only as a test, because a module run reads about twice the tokens of a full run',
       visual: { type: 'bars', max: 380, rows: [
         { label: 'C2’s full run, Nov 4', parts: [[192, 'code', '192M tokens']] },
         { label: 'The module dry run, Nov 4, on a copy', parts: [[380, 'opus', '380M tokens']] }] },
-      vcap: 'Live keeps the morning module run off since the merge of Nov 7. Will decides if every client may cost about twice as much.',
-      stats: [['About 2x', 'the tokens of a module run against a full run', 'real']] },
-
-    { about: ['thand'], kicker: 'Who waits for it',
-      head: 'Five modules need a Tracking answer from the last {freshDays} days',
-      visual: { type: 'gate', rows: [
-        ['Results', 'Is this campaign doing its job?', 'pass'],
-        ['Search terms and reach', 'Are the right people seeing it?', 'pass'],
-        ['Ads and pages', 'Are the ads and pages strong?', 'pass'],
-        ['Bid and budget', 'Is the bid right, and what would more or less money do?', 'pass'],
-        ['Decide', 'Where does the money go, what comes first, and who says yes?', 'pass']],
-        end: ['No fresh Tracking answer: their save refuses', 'will'] },
-      vcap: 'Each one reads Tracking’s summary, verdict and day in its brief. Decide can also read the whole answer. With no answer from the last {freshDays} days, the brief says to wait, and the save refuses. Not built: with a check on each call, each platform has a result of the day.' },
-    { about: ['thand'], kicker: 'A real hand-on · C2, Nov 1',
-      head: 'C2’s campaign answers judged on what Tracking trusted',
-      visual: { type: 'flow', rows: [
-        { title: 'Results, Meta remarketing', steps: [['Tracking: Meta’s lead count is not trusted', '', 'opus']], end: [['Judge Meta on clicks, landing page views and GA4 leads', '', 'keep']] },
-        { title: 'Results, LA + New York', steps: [['Tracking: Google’s count is true from Oct 1', '', 'opus']], end: [['September’s 4.5 conversions are no true count', '', 'keep']] },
-        { title: 'Bid and budget, Brand', steps: [['Tracking: true from Oct 1 only', '', 'opus']], end: [['The September conversions are not checked', '', 'keep']] }] },
-      vcap: 'Each line comes from C2’s campaign answers of Nov 1. Each one names the Tracking answer as its source.' },
-    { about: ['thand'], kicker: 'Two judges of trust',
-      head: 'Code’s own week rules, not Tracking’s answer, set the spend box and the target lines',
-      visual: { type: 'gate', rows: [
-        ['The spend box', 'A run may raise Google spend only while code’s rules trust the last {boxWeeks} full weeks.', 'hold'],
-        ['The target lines', 'C2’s Meta, Nov 3: no trusted day in the last 30 settled days to judge its $60 target.', 'hold'],
-        ['The words of Results', '“If Tracking does not trust the count, judge on clicks and cost.”', 'pass'],
-        ['The words of Bid and budget', 'They give no rule for a count that Tracking does not trust.', 'wait']] },
-      vcap: 'So two judges of trust can disagree: code’s rules and Tracking’s answer. The part on which days count shows a real case.' }
+      vcap: 'Since the merge of Nov 7, the morning module run stays off in live until Will says yes to its cost. Until then he can still test one module on one client, with Run under Validators and then Modules.',
+      stats: [['About 2x', 'the tokens of a module run against a full run', 'real']] }
   ],
 
   examples: {
-    CALL: { tag: 'real', rows: [{ steps: [['Will presses Run on Tracking', 'Validators, Modules', 'will'], ['A module test for C2', 'Nov 1, 3:13 AM', 'code']], end: [['C2’s Tracking answer', 'saved at 3:33 AM', 'opus']] }], note: 'The same morning, the tests for Bull Legal and Kogalla saved their Tracking answers at 3:29 and 3:30 AM.' },
-    GOO: { tag: 'plan', rows: [{ steps: [['C2’s Google', 'its own check and answer', 'code']], end: [['Trusted from Oct 1', 'its answer of Nov 1', 'keep']] }], note: 'Not built: today one answer covers both of C2’s platforms. Split, Google’s result stands on its own while Meta waits on its fix.' },
-    MET: { tag: 'plan', rows: [{ steps: [['C2’s Meta', 'two tags send each lead twice', 'block']], end: [['Not trusted, with its fix', 'case #58', 'block']] }], note: 'Not built. A break on Meta starts no work on Google.' },
-    MSF: { tag: 'plan', rows: [{ steps: [['A client with a Microsoft account', 'Microsoft’s 2 goals', 'code']], end: [['Its own result', '', 'code']] }], note: 'Not built, and made up: none of the three test clients has a Microsoft account.' },
-    MARKS: { tag: 'plan', rows: [{ steps: [['KDX’s Contact_Phone_GA4', '2 in the last 30 settled days, no choice yet', 'code'], ['Opus chooses', 'order, lead or no, with why', 'next']], end: [['Counted, or left out, that morning', '', 'code']] }], note: 'Not built. On Nov 7 it still waits for Will’s mark (KDX’s brief).' },
-    BROKE: { tag: 'plan', rows: [{ steps: [['KDX’s Google', 'the week of Oct 26 is not trusted', 'block'], ['Has it broken?', 'yes, and KDX has no answer: a new break', 'next']], end: [['Opus answers for KDX’s Google', '', 'opus']] }], note: 'Not built. The finding is real: KDX’s brief, Nov 7.' },
-    OKAY: { tag: 'plan', rows: [{ steps: [['Bull Legal’s Google', 'no week, goal or swing found', 'code']], end: [['Not broken: trusted', 'no Opus starts', 'keep']] }], note: 'Not built. Made from Bull’s run of Nov 1: 4 goals passed, 2 could not check, none failed.' },
-    STAND: { tag: 'plan', rows: [{ steps: [['C2’s Meta, Nov 2', 'the same failure as Nov 1', 'block'], ['The last answer named it', 'Nov 1', 'code']], end: [['The last answer stands', 'no Opus starts', 'code']] }], note: 'Not built. The failure is real: the verifiers’ replay of Nov 2.' },
-    FACTS: { tag: 'real', rows: [{ steps: [['C2, Nov 7', 'Google and Meta', 'code'], ['The brief', '14 weeks a platform, 13 weeks of the lead app, 4 actions that wait for a mark', 'code']], end: [['One page for Opus', 'with the reads it must run', 'opus']] }], note: 'C2’s Tracking brief as Barbara gives it on Nov 7.' },
-    CHECKS: { tag: 'real', rows: [{ steps: [['C2’s tracking checks', 'Nov 1, 3:15 AM, 164 seconds', 'will'], ['The run', '2 failed, 1 needs a decision, 9 could not check, 3 passed', 'code']], end: [['Opus answers each line', '', 'opus']] }], note: 'Both failures are Meta’s: each lead counted twice, and broken days with no person’s yes then.' },
-    TRUST: { tag: 'real', rows: [{ steps: [['C2’s Meta lead days', 'Sep 14 to Oct 26', 'code'], ['Will’s answer on case #260', 'two Meta Lead tags fired on each form', 'will']], end: [['Broken: no number is read from them', '', 'block']] }], note: 'The trust calendar on Nov 7: 49 broken days and 1 suspect day of C2’s Meta, from Sep 14 to Nov 2.' },
-    OPUS: { tag: 'real', rows: [{ steps: [['C2, Nov 1', 'Opus reads, then answers', 'opus']], end: [['Google: trusted from Oct 1', '', 'keep'], ['Meta: not trusted', 'judge it on clicks and GA4 leads', 'block']] }], note: 'C2’s Tracking answer of Nov 1: a problem, with four fixes.' },
-    SAVE: { tag: 'real', rows: [{ steps: [['C2’s answer', 'a problem, 4 fixes, 6 checks answered', 'opus'], ['Code checks it', 'every rule of that day passes', 'code']], end: [['Saved, Nov 1, 3:33 AM', '', 'keep']] }], note: 'No check run had reached Barbara, so the save held it to none, as it does today.' },
-    OUT: { tag: 'real', rows: [{ steps: [['C2’s Tracking answer', 'Nov 1, 3:33 AM', 'opus'], ['C2’s Results answer for Meta', 'it reads Tracking’s summary', 'opus']], end: [['Meta judged on clicks, landing page views and GA4 leads', '', 'keep']] }], note: 'The campaign modules ran after Tracking in C2’s tests of Nov 1.' }
+    CALL: { tag: 'plan', rows: [{ steps: [['A morning at C2', '', 'code'], ['Code checks Google, then Meta', 'each one on its own', 'next']], end: [['Two answers, one for each platform', '', 'next']] }], note: 'Today one Opus subagent answers for the whole account when Tracking is due, and the morning module run is off in live.' },
+    COUNT: { tag: 'real', rows: [{ steps: [['C2’s Google, the week of Oct 19', 'its main action, the lead form', 'code']], end: [['Google counted 3 leads', 'each on the day it came in', 'code']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7.' },
+    TRUTH: { tag: 'plan', rows: [{ steps: [['C2’s lead app took 10 leads', 'the week of Oct 19', 'code'], ['4 came from a Google click, and the client marked 1 of those bad', '', 'code']], end: [['3 real Google leads', '', 'keep']] }], note: 'The numbers are real, from Barbara’s weekly lead counts for C2, read on Nov 7. The lead app keeps only Google’s click, so today this record proves Google’s count but not Meta’s.' },
+    MATCH: { tag: 'plan', rows: [{ steps: [['Google counted 3', '', 'code'], ['The lead app has 3 real leads', '', 'keep']], end: [['They match', 'C2, the week of Oct 19', 'keep']] }], note: 'Today the match judges only Google, a whole week at a time. In Barbara’s weekly lead counts for C2, read on Nov 7, the weeks of Oct 5, Oct 12 and Oct 19 match.' },
+    WORKS: { tag: 'real', rows: [{ steps: [['C2’s Google matches the lead app', 'in every settled week from Oct 5', 'keep']], end: [['Its count is safe to use from Oct 1', '', 'keep']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7, and C2’s Tracking answer of Nov 1.' },
+    WHY: { tag: 'plan', rows: [{ steps: [['Meta’s tag counted 7 leads, but 4 came in', 'Oct 26 to Nov 1', 'block'], ['Two Meta Lead tags fire on each form', 'since May 20', 'opus']], end: [['Meta counts each contact-form lead twice', '', 'block']] }], note: 'Nothing starts on a gap today. The finding is real, from C2’s trust calendar, read on Nov 7, and C2’s Tracking answer of Nov 1, a module test.' },
+    REBUILD: { tag: 'plan', rows: [{ steps: [['Bull’s Google, the week of Oct 5', 'Google counted 1, and the record holds 2 real leads', 'block'], ['The record’s count takes the place of Google’s', '', 'next']], end: [['Bull’s true count that week is 2', 'and both numbers are kept', 'next']] }], note: 'The week is real. Barbara’s weekly lead counts for Bull Legal hold 3 sends, and Bull’s answer of Nov 1 found that one of them was the same person again.' },
+    CASE: { tag: 'real', rows: [{ steps: [['C2’s fix is to publish the staged Tag Manager version', 'one Meta Lead tag paused, the other only on the sent form', 'opus']], end: [['Case #58 waits on Will', 'Meta counts each contact-form lead twice', 'will']] }], note: 'C2’s Tracking answer of Nov 1 proposed it. The module changes nothing itself: Decide puts each fix on a case.' },
+    HAND: { tag: 'plan', rows: [{ steps: [['C2, a morning', '', 'next']], end: [['Google is trusted from Oct 1', '', 'keep'], ['Meta is rebuilt from the record each day', 'until its fix goes out', 'next']] }], note: 'Today one answer covers the whole account, and nothing rebuilds a number.' }
   },
 
-  reviewed: { self: '188799ed', on: '2026-11-07' }
+  reviewed: { self: '20cbf630', on: '2026-11-07' }
 });
