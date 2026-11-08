@@ -12,8 +12,8 @@
 // stops, a phrase or broad negative, and every negative of a client Will holds still come to him. Built: the code checks
 // (negatives.rs waits_for, the limits and the Performance Max room; questions.rs) and the list of ready negatives (the
 // change file and Chad's input). Not built: the send, its daily list and its undo (a program cannot write through
-// Barbara, so the daily run's session sends), and a code check of the card's never-negate words (PROT; cards.rs shows
-// them to the judge only). The hold is Barbara's (comm-chat src/chat/tools/run_hold.rs: a run's change on a held client
+// Barbara, so the daily run's session sends). Built Nov 8: the code check of the card's never-negate words (PROT;
+// negatives.rs protected: an exact negative that is a protected word or phrase waits for Will). The hold is Barbara's (comm-chat src/chat/tools/run_hold.rs: a run's change on a held client
 // waits unless Will approved its case). Real case: ADI, Nov 8, held (state/search-terms/adi/2026-11-08/ADI/
 // negatives-change.json, the log's "send=4 waits=2 need=23"): of 46 blocks, 4 ready, 2 bought, 23 wait for the
 // client's words, 17 blocked by a live negative.
@@ -27,7 +27,7 @@ LOGIC.flow({
     'Q0{"On a case<br/>already?"}:::code',
     'OW(["On its way"]):::keep',
     'W1{"Bought, a keyword,<br/>over Google\'s limits,<br/>or a feed product?"}:::will',
-    'PROT{"Not built: does it<br/>block a word the<br/>card protects?"}:::next',
+    'PROT{"Does it block a<br/>word the card<br/>protects?"}:::code',
     'WAIT["Waits for Will<br/>on a case"]:::will',
     'SEND["Ready: an exact<br/>negative on the campaign"]:::block',
     'NEEDS{"Does the call rest<br/>on what the<br/>client sells?"}:::code',
@@ -93,12 +93,12 @@ LOGIC.flow({
         ['A product of the feed, on a Shopping or Performance Max campaign', 'its negative would stop that product’s ad for the search', 'hold'],
         ['Past 10,000 negatives on a Performance Max campaign', 'Google takes no more, so Will makes room first, or picks which go', 'hold']], end: ['Any one, and it waits for Will', 'will'] },
       vcap: 'Will’s own verdict on a search that bought settles it. On ADI, Nov 8, “vacuubrand md 1c” and “dp 10bst” wait, because each one had a single click, and that click bought.' },
-    { about: ['protect'], kicker: 'Not built yet',
-      head: 'A negative must not block a word its campaign’s card protects, but no code checks that yet',
+    { about: ['protect'], kicker: 'Built Nov 8',
+      head: 'A negative that is a word its campaign’s card protects waits for Will',
       visual: { type: 'flow', rows: [
-        { title: 'Today', steps: [['The card’s protected words', 'NA US EN protects “diaphragm pump”', 'opus'], ['Only Opus reads them', 'in the card, before it judges', 'opus']], end: [['No code checks a negative against them', '', 'next']] },
-        { title: 'Once the check is built', steps: [['varian diaphragm pump', 'ADI, Nov 8, a competitor', 'block'], ['Is the negative itself a protected word or phrase?', 'no, so “diaphragm pump” stays open', 'next']], end: [['It passes', 'Claude’s call', 'next']] }] },
-      vcap: 'Each card lists the words its campaign must keep, its core keywords and its brand. An exact negative blocks only its own search, so Claude’s call is that the check stops one only when the negative is a protected word or phrase itself. A phrase or broad negative blocks every search with its words, so it already comes to Will.' },
+        { title: 'It is a protected word', steps: [['music pr', 'if a judge blocked it on C2’s LA + New York', 'block'], ['Is the negative itself a protected word or phrase?', 'yes, the card protects “music pr”', 'code']], end: [['It waits for Will', 'it would block that very search', 'will']] },
+        { title: 'It only holds one', steps: [['varian diaphragm pump', 'ADI, Nov 8, a competitor', 'block'], ['Is the negative itself a protected word or phrase?', 'no, so “diaphragm pump” stays open', 'code']], end: [['It goes on', 'it blocks only this one search', 'code']] }] },
+      vcap: 'Each card lists the words its campaign must keep, like its core keywords and its brand. An exact negative blocks only its own search, so the check stops one only when the negative is a protected word or phrase itself. Before Nov 8 only Opus read these words, and this map showed the gap, so it became a code check. On Nov 8 it held none of ADI’s 4 ready negatives or C2’s 1.' },
     { about: ['needwords'], kicker: 'Which negatives · built Nov 7',
       head: 'Only a call about what the client sells, or where it works, needs the client’s words',
       visual: { type: 'gate', rows: [
@@ -152,7 +152,7 @@ LOGIC.flow({
     Q0: { tag: 'made', rows: [{ steps: [['A block already on a case', '', 'code'], ['On a case already?', 'yes', 'code']], end: [['On its way', 'no second case', 'keep']] }], note: 'This check stops the same negative from going on two cases.' },
     OW: 'Q0',
     W1: { tag: 'real', rows: [{ steps: [['vacuubrand md 1c', 'ADI, SA BR PT, Nov 8', 'block'], ['Bought, a keyword, over the limits, or a feed product?', 'it bought in the last {boughtDays} days', 'will']], end: [['Waits for Will', '', 'will']] }], note: 'ADI, Nov 8: one click for $13.28, and that click bought. “dp 10bst” waits for the same reason.' },
-    PROT: { tag: 'plan', rows: [{ steps: [['varian diaphragm pump', 'ADI, NA US EN, Nov 8', 'block'], ['Does it block a word the card protects?', 'its card protects “diaphragm pump”', 'next']], end: [['No, it blocks only this one search', 'so it would pass', 'next']] }], note: 'Not built: today only Opus reads the card’s protected words. Claude’s call: the check stops an exact negative only when it is itself a protected word or phrase.' },
+    PROT: { tag: 'real', rows: [{ steps: [['varian diaphragm pump', 'ADI, NA US EN, Nov 8', 'block'], ['Does it block a word the card protects?', 'its card protects “diaphragm pump”', 'code']], end: [['No, it blocks only this one search', 'so it goes on', 'code']] }], note: 'ADI, Nov 8: it stayed among the 4 ready negatives. The check stops an exact negative only when it is itself a protected word or phrase.' },
     WAIT: { tag: 'real', rows: [{ steps: [['dp 10bst', 'a block on SA + ES that bought', 'block'], ['Waits for Will', 'he decides if it was a real lead', 'will']], end: [['Will decides on the case', '', 'will']] }], note: 'ADI, Nov 8. A search also waits when it is a live keyword here, is over Google’s limits, or names a product of the feed.' },
     SEND: { tag: 'real', rows: [{ steps: [['anotherland label', 'Opus’s block', 'block'], ['Ready', 'an exact negative', 'block']], end: [['Next: does the call rest on what the client sells?', '', 'code']] }], note: 'C2’s data, in the code’s test of Nov 7 with no second judge: the block’s exact negative went on Will’s case.' },
     NEEDS: { tag: 'real', rows: [{ steps: [['symphony distribution', 'a block, Nov 6: a service C2 does not sell', 'block'], ['Does the call rest on what the client sells?', 'yes', 'code']], end: [['Do the client’s own words settle it?', '', 'opus']] }], note: 'C2, Nov 6.' },
@@ -168,5 +168,5 @@ LOGIC.flow({
     GO: 'WILL'
   },
 
-  reviewed: { self: 'c770d1a4', above: 'cce35754', on: '2026-11-08' }
+  reviewed: { self: 'c7f11551', above: 'cce35754', on: '2026-11-08' }
 });
