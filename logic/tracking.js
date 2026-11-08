@@ -19,6 +19,7 @@ LOGIC.flow({
     'CALL(["Every morning, and on every call:<br/>Google, Meta and Microsoft,<br/>each one on its own"]):::next',
     'COUNT["What the platform counted:<br/>its conversions by day and by<br/>campaign, and which actions count"]:::code',
     'TRUTH["What really happened: the<br/>client’s own leads and sales,<br/>each with its ad click"]:::next',
+    'SEND["The record sends each real lead<br/>and sale to its platform, so each<br/>conversion is one we know"]:::next',
     'MATCH{"Do they match, in<br/>count and in value?"}:::next',
     'WORKS(["Tracking works, and the<br/>numbers are safe to use"]):::keep',
     'WHY["Find out why it broke"]:::next',
@@ -26,12 +27,12 @@ LOGIC.flow({
     'CASE(["The fix goes on a case<br/>for a person"]):::will',
     'HAND(["Hand on one answer for each<br/>platform: which days to trust,<br/>and the true numbers"]):::next',
     'CALL --> COUNT', 'CALL --> TRUTH',
-    'COUNT --> MATCH', 'TRUTH --> MATCH',
+    'COUNT --> MATCH', 'TRUTH --> MATCH', 'TRUTH --> SEND', 'SEND --> MATCH',
     'MATCH -- yes --> WORKS', 'MATCH -- no --> WHY',
     'WHY --> REBUILD', 'WHY --> CASE',
     'WORKS --> HAND', 'REBUILD --> HAND'
   ],
-  links: { CALL: 'tcall', COUNT: 'tcount', TRUTH: 'ttruth', MATCH: 'tmatch', WHY: 'twhy', REBUILD: 'trebuild', HAND: 'thand' },
+  links: { CALL: 'tcall', COUNT: 'tcount', TRUTH: 'ttruth', SEND: 'tsend', MATCH: 'tmatch', WHY: 'twhy', REBUILD: 'trebuild', HAND: 'thand' },
   leaves: { tcall: 'Every morning, each platform on its own' },
 
   // Each slide belongs to one view: the module's own slides first, then the slides of its rule.
@@ -56,8 +57,9 @@ LOGIC.flow({
         ['Nov 1', 'The first module tests: Tracking answers for Bull Legal, Kogalla and C2.'],
         ['Nov 4', 'The module run joins the daily run, first as a dry run on a copy.'],
         ['Nov 7', 'The module run is merged, but it stays off in live until Will tests it and says yes to its cost.'],
-        ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.']] },
-      vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Four things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, and the rebuild.' },
+        ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.'],
+        ['Nov 7, later', 'Will asks if the orders and leads can be matched to the conversions, and says he can make sure we have the data. So in the plan the record sends each one, and the match can be one to one.']] },
+      vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Five things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, the sending of each lead and sale from the record, and the rebuild.' },
 
     { about: ['tcall'], kicker: 'Every call',
       head: 'Code checks each platform every time the module is called, and that check costs no tokens',
@@ -87,6 +89,7 @@ LOGIC.flow({
     CALL: { tag: 'plan', rows: [{ steps: [['A morning at C2', '', 'code'], ['Code checks Google, then Meta', 'each one on its own', 'next']], end: [['Two answers, one for each platform', '', 'next']] }], note: 'Today one Opus subagent answers for the whole account when Tracking is due, and the morning module run is off in live.' },
     COUNT: { tag: 'real', rows: [{ steps: [['C2’s Google, the week of Oct 19', 'its main action, the lead form', 'code']], end: [['Google counted 3 leads', 'each on the day it came in', 'code']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7.' },
     TRUTH: { tag: 'plan', rows: [{ steps: [['C2’s lead app took 10 leads', 'the week of Oct 19', 'code'], ['4 came from a Google click, and the client marked 1 of those bad', '', 'code']], end: [['3 real Google leads', '', 'keep']] }], note: 'The numbers are real, from Barbara’s weekly lead counts for C2, read on Nov 7. The lead app keeps only Google’s click, so today this record proves Google’s count but not Meta’s.' },
+    SEND: { tag: 'plan', rows: [{ steps: [['A real lead comes into C2’s lead app', 'from a Google click', 'code'], ['The record sends it to Google', 'with the click id and the lead’s own id', 'next']], end: [['Google’s count is now leads we know, one by one', '', 'keep']] }], note: 'Nothing sends a lead yet. Today C2’s lead app only tells Google to take back each lead the client marks bad.' },
     MATCH: { tag: 'plan', rows: [{ steps: [['Google counted 3', '', 'code'], ['The lead app has 3 real leads', '', 'keep']], end: [['They match', 'C2, the week of Oct 19', 'keep']] }], note: 'Today the match judges only Google, a whole week at a time. In Barbara’s weekly lead counts for C2, read on Nov 7, the weeks of Oct 5, Oct 12 and Oct 19 match.' },
     WORKS: { tag: 'real', rows: [{ steps: [['C2’s Google matches the lead app', 'in every settled week from Oct 5', 'keep']], end: [['Its count is safe to use from Oct 1', '', 'keep']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7, and C2’s Tracking answer of Nov 1.' },
     WHY: { tag: 'plan', rows: [{ steps: [['Meta’s tag counted 7 leads, but 4 came in', 'Oct 26 to Nov 1', 'block'], ['Two Meta Lead tags fire on each form', 'since May 20', 'opus']], end: [['Meta counts each contact-form lead twice', '', 'block']] }], note: 'Nothing starts on a gap today. The finding is real, from C2’s trust calendar, read on Nov 7, and C2’s Tracking answer of Nov 1, a module test.' },
@@ -95,5 +98,5 @@ LOGIC.flow({
     HAND: { tag: 'plan', rows: [{ steps: [['C2, a morning', '', 'next']], end: [['Google is trusted from Oct 1', '', 'keep'], ['Meta is rebuilt from the record each day', 'until its fix goes out', 'next']] }], note: 'Today one answer covers the whole account, and nothing rebuilds a number.' }
   },
 
-  reviewed: { self: '20cbf630', on: '2026-11-07' }
+  reviewed: { self: '5a75ad7e', on: '2026-11-07' }
 });

@@ -130,5 +130,5 @@ LOGIC.flow({
     COUNT: { tag: 'real', rows: [{ steps: [['C2’s Google, the week of Oct 19', 'its main action, the lead form', 'code']], end: [['3 conversions, each on the day it happened', '', 'code']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7. Today the match uses the main action alone.' }
   },
 
-  reviewed: { self: 'c4e4b027', above: '729bed9e', on: '2026-11-07' }
+  reviewed: { self: 'c4e4b027', above: '7441c765', on: '2026-11-07' }
 });

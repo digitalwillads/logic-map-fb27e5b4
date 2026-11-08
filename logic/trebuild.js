@@ -94,5 +94,5 @@ LOGIC.flow({
     USE: { tag: 'plan', rows: [{ steps: [['Bull’s Results answer', 'the week of Oct 5', 'opus']], end: [['It judges on 2 real leads, not Google’s 1', '', 'next']] }], note: 'The 2 come from Bull’s answer of Nov 1, which found that one of the 3 sends was the same person again.' }
   },
 
-  reviewed: { self: '589a4732', above: '729bed9e', on: '2026-11-07' }
+  reviewed: { self: '589a4732', above: '7441c765', on: '2026-11-07' }
 });

@@ -39,7 +39,7 @@ LOGIC.flow({
 
   deck: [
     { about: ['tmatch'], kicker: 'The idea',
-      head: 'The match compares two counts, never one lead with one conversion',
+      head: 'The platforms report only totals, so the match compares counts unless the record sent each conversion itself',
       visual: { type: 'bars', max: 5, rows: [
         { label: 'Bull’s week of Oct 5: Google', parts: [[1, 'block', '1']] },
         { label: 'Bull’s week of Oct 5: the lead app', parts: [[3, 'keep', '3']] },
@@ -47,7 +47,7 @@ LOGIC.flow({
         { label: 'Bull’s week of Oct 12: the lead app', parts: [[5, 'keep', '5']] },
         { label: 'Bull’s week of Oct 19: Google', parts: [[4, 'code', '4']] },
         { label: 'Bull’s week of Oct 19: the lead app', parts: [[4, 'keep', '4']] }] },
-      vcap: 'These are Bull Legal’s three newest settled weeks. Google reports how many conversions came each day and in each campaign, but not which lead each one was, so the match lays the two counts side by side.' },
+      vcap: 'These are Bull Legal’s three newest settled weeks. Google reports how many conversions came each day and in each campaign, but not which lead each one was, so the match lays the two counts side by side. Where the record sent each lead and sale itself, every conversion is one we know, and the match checks them one by one.' },
     { about: ['tmatch'], kicker: 'Days and weeks',
       head: 'The match lines the counts up by day and by campaign, but it judges a whole week',
       visual: { type: 'flow', rows: [
@@ -111,5 +111,5 @@ LOGIC.flow({
     NO: { tag: 'real', rows: [{ steps: [['Bull, the week of Oct 5', 'Google 1, real leads 3', 'block']], end: [['Not trusted, and the account scorecard lists it', '', 'block']] }], note: 'Barbara’s weekly lead counts for Bull Legal, read on Nov 7. Bull’s answer of Nov 1 found the gap was mostly one person sending the form twice.' }
   },
 
-  reviewed: { self: '211e4817', above: '729bed9e', on: '2026-11-07' }
+  reviewed: { self: '211e4817', above: '7441c765', on: '2026-11-07' }
 });

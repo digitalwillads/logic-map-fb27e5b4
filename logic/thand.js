@@ -90,5 +90,5 @@ LOGIC.flow({
     TARGET: { tag: 'plan', rows: [{ steps: [['C2’s Meta target, Nov 3', '$60 a lead', 'code'], ['None of its last 30 settled days counted', '', 'block']], end: [['No day to judge it on', 'it spent about $330', 'block']] }], note: 'The case is real, from C2’s target line of Nov 3. Nothing rebuilds those days yet.' }
   },
 
-  reviewed: { self: '56f12656', above: '729bed9e', on: '2026-11-07' }
+  reviewed: { self: '56f12656', above: '7441c765', on: '2026-11-07' }
 });

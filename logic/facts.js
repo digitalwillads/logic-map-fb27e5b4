@@ -43,8 +43,8 @@ LOGIC.facts({
   bidWeeks: 8,         // WEEKS_SHOWN (brief/numbers.rs:38): the weeks the bids brief shows
   bidChanges: 44,      // CHANGE_DAYS = scorecard::WORSE_CHANGE_DAYS (brief/numbers.rs:32): its changes read this far back
   bidShown: 8,         // CHANGES_SHOWN (brief/numbers.rs:36): at most this many changes listed
-  bidStrategy: 1000,   // STRATEGY_CHARS (brief/numbers.rs:44): the strategy page is clipped to this many characters
-  bidPage: 24000,      // PAGE_CHARS (brief/mod.rs:288): a longer brief reads in pages of this many characters
+  bidStrategy: '1,000', // STRATEGY_CHARS (brief/numbers.rs:44): the strategy page is clipped to this many characters
+  bidPage: '24,000',   // PAGE_CHARS (brief/mod.rs:288): longer facts read in pages of this many characters
   bidHours: 72,        // the module's words (mod.rs:264): a teammate's change under this many hours waits
   bidRunHours: 24,     // run::MAX_AGE_MS (run.rs:28): a check run older than this is refused
   bidJev: 0.30,        // jev::UNCERTAIN low end (chat/jev.rs:19): Jev at or under this on a proposal refuses the answer
