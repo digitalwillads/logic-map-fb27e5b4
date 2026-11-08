@@ -10,6 +10,10 @@
 // run (380M against 192M tokens). Barbara, read 2026-11-07: client_leads weeks of C2 (13) and Bull Legal (2), C2's trust
 // calendar (Meta), KDX's Tracking brief, the cases #58 and #260; Tracking's answers of Nov 1. The old parts:
 // retired/2026-11-07-tracking-redo/.
+// Will, 2026-11-08, asked "Should Opus's tracking fix wait for a person's yes?": "No, Opus makes the fix itself, and code
+// checks it." So the fix no longer goes on a case. A fix that needs access we do not have still goes to a person (his rule
+// of 2026-11-03: a person only for missing access, a client action, or money). C2's answer 11 of Nov 1 (Barbara, read
+// 2026-11-08): case #58 publishes the staged Tag Manager version and waits on Will; case #57 is the Data Manager sign-in.
 LOGIC.flow({
   id: 'tracking',
   title: 'The tracking module', short: 'Tracking module', status: 'Partly built; the rest is not built yet',
@@ -24,12 +28,12 @@ LOGIC.flow({
     'WORKS(["Tracking works, and the<br/>numbers are safe to use"]):::keep',
     'WHY["Find out why it broke"]:::next',
     'REBUILD["Rebuild the true numbers<br/>from the client’s record"]:::next',
-    'CASE(["The fix goes on a case<br/>for a person"]):::will',
+    'FIX(["Opus makes the fix itself,<br/>and code checks that the<br/>counts match again"]):::next',
     'HAND(["Hand on one answer for each<br/>platform: which days to trust,<br/>and the true numbers"]):::next',
     'CALL --> COUNT', 'CALL --> TRUTH',
     'COUNT --> MATCH', 'TRUTH --> MATCH', 'TRUTH --> SEND', 'SEND --> MATCH',
     'MATCH -- yes --> WORKS', 'MATCH -- no --> WHY',
-    'WHY --> REBUILD', 'WHY --> CASE',
+    'WHY --> REBUILD', 'WHY --> FIX',
     'WORKS --> HAND', 'REBUILD --> HAND'
   ],
   links: { CALL: 'tcall', COUNT: 'tcount', TRUTH: 'ttruth', SEND: 'tsend', MATCH: 'tmatch', WHY: 'twhy', REBUILD: 'trebuild', HAND: 'thand' },
@@ -59,8 +63,9 @@ LOGIC.flow({
         ['Nov 7', 'The module run is merged, but it stays off in live until Will tests it and says yes to its cost.'],
         ['Nov 7, on this map', 'Will asks for this design: the client’s own record proves each platform’s count, and the true numbers are rebuilt from it.'],
         ['Nov 7, later', 'Will asks if the orders and leads can be matched to the conversions, and says he can make sure we have the data. So in the plan the record sends each one, and the match can be one to one.'],
-        ['Nov 8', 'Will asks what happens when a new client’s tracking is broken. So in the plan, code checks the record before the first send, and Opus works on each fix.']] },
-      vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Five things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, the sending of each lead and sale from the record, and the rebuild.' },
+        ['Nov 8', 'Will asks what happens when a new client’s tracking is broken. So in the plan, code checks the record before the first send, and Opus works on each fix.'],
+        ['Nov 8, later', 'Will says that Opus makes each tracking fix itself, with no person’s yes, and code checks it.']] },
+      vcap: 'What works today is the weekly match on Google for two clients, code’s five warning signs, the platform checks, and Opus’s answer as a module test. Six things are not built yet: each platform on its own, the Meta and Microsoft clicks in the record, the store’s orders, the sending of each lead and sale from the record, the rebuild, and Opus making each fix itself.' },
 
     { about: ['tcall'], kicker: 'Every call',
       head: 'Code checks each platform every time the module is called, and that check costs no tokens',
@@ -74,7 +79,7 @@ LOGIC.flow({
       head: 'Each platform gets its own answer, so a break on Meta never holds up Google',
       visual: { type: 'flow', rows: [
         { title: 'C2’s Google', steps: [['It matches the lead app in every settled week from Oct 5', '', 'code']], end: [['Trusted from Oct 1', '', 'keep']] },
-        { title: 'C2’s Meta', steps: [['Its tag counts more leads than came in', 'two Meta Lead tags on each form since May 20', 'block']], end: [['Not trusted, and its fix waits on a person', 'case #58', 'block']] }] },
+        { title: 'C2’s Meta', steps: [['Its tag counts more leads than came in', 'two Meta Lead tags on each form since May 20', 'block']], end: [['Not trusted until its fix goes out', 'today the fix waits on case #58', 'block']] }] },
       vcap: 'Today one Opus subagent answers for the whole account, so C2’s answer of Nov 1 had to cover both platforms at once. Split by platform, Google’s answer stands on its own while Meta waits for its fix.',
       quote: ['IT would make sense to have this split by platform yes?', 'Nov 7'] },
     { about: ['tcall'], kicker: 'Today',
@@ -95,9 +100,9 @@ LOGIC.flow({
     WORKS: { tag: 'real', rows: [{ steps: [['C2’s Google matches the lead app', 'in every settled week from Oct 5', 'keep']], end: [['Its count is safe to use from Oct 1', '', 'keep']] }], note: 'Barbara’s weekly lead counts for C2, read on Nov 7, and C2’s Tracking answer of Nov 1.' },
     WHY: { tag: 'plan', rows: [{ steps: [['Meta’s tag counted 7 leads, but 4 came in', 'Oct 26 to Nov 1', 'block'], ['Two Meta Lead tags fire on each form', 'since May 20', 'opus']], end: [['Meta counts each contact-form lead twice', '', 'block']] }], note: 'Nothing starts on a gap today. The finding is real, from C2’s trust calendar, read on Nov 7, and C2’s Tracking answer of Nov 1, a module test.' },
     REBUILD: { tag: 'plan', rows: [{ steps: [['Bull’s Google, the week of Oct 5', 'Google counted 1, and the record holds 2 real leads', 'block'], ['The record’s count takes the place of Google’s', '', 'next']], end: [['Bull’s true count that week is 2', 'and both numbers are kept', 'next']] }], note: 'The week is real. Barbara’s weekly lead counts for Bull Legal hold 3 sends, and Bull’s answer of Nov 1 found that one of them was the same person again.' },
-    CASE: { tag: 'real', rows: [{ steps: [['C2’s fix is to publish the staged Tag Manager version', 'one Meta Lead tag paused, the other only on the sent form', 'opus']], end: [['Case #58 waits on Will', 'Meta counts each contact-form lead twice', 'will']] }], note: 'C2’s Tracking answer of Nov 1 proposed it. The module changes nothing itself: Decide puts each fix on a case.' },
+    FIX: { tag: 'plan', rows: [{ steps: [['C2’s Meta counts each lead twice', 'two Meta Lead tags on each form', 'block'], ['Opus publishes the staged Tag Manager version itself', 'with no person’s yes', 'next']], end: [['Code checks that Meta’s count matches the record again', '', 'next']] }], note: 'The fix is real, from C2’s Tracking answer of Nov 1. Today it waits on Will on case #58, because each fix of a module run goes on a case for a person.' },
     HAND: { tag: 'plan', rows: [{ steps: [['C2, a morning', '', 'next']], end: [['Google is trusted from Oct 1', '', 'keep'], ['Meta is rebuilt from the record each day', 'until its fix goes out', 'next']] }], note: 'Today one answer covers the whole account, and nothing rebuilds a number.' }
   },
 
-  reviewed: { self: '5a75ad7e', on: '2026-11-07' }
+  reviewed: { self: 'e037db1e', on: '2026-11-08' }
 });

@@ -113,5 +113,5 @@ LOGIC.flow({
     REAL: { tag: 'plan', rows: [{ steps: [['C2, the week of Oct 19', '3 real Google leads', 'keep'], ['The leads that came from a Meta click', 'not kept today', 'next']], end: [['A real count for each platform', '', 'next']] }], note: 'Today the real count is Google’s alone, for two clients.' }
   },
 
-  reviewed: { self: '11e6def7', above: '7441c765', on: '2026-11-07' }
+  reviewed: { self: '11e6def7', above: '7f08998d', on: '2026-11-08' }
 });

@@ -111,5 +111,5 @@ LOGIC.flow({
     NO: { tag: 'real', rows: [{ steps: [['Bull, the week of Oct 5', 'Google 1, real leads 3', 'block']], end: [['Not trusted, and the account scorecard lists it', '', 'block']] }], note: 'Barbara’s weekly lead counts for Bull Legal, read on Nov 7. Bull’s answer of Nov 1 found the gap was mostly one person sending the form twice.' }
   },
 
-  reviewed: { self: '211e4817', above: '7441c765', on: '2026-11-07' }
+  reviewed: { self: '211e4817', above: '7f08998d', on: '2026-11-08' }
 });

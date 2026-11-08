@@ -12,6 +12,9 @@
 // cause, the fix, $33 a day, 95 Lead events for 26 sends, case #58), Bull (answer 7: the week of Oct 5, the week of Oct 26,
 // what would prove it wrong). Bull's scorer: src/lead_match/weeks.rs:57-75 (bug #458). The verifiers' replay of Nov 2 for
 // C2 (the same failure). No scorecard in Barbara's copy of Nov 7 holds a "1 lead in 5 clicks" alarm.
+// Will, 2026-11-08, asked "Should Opus's tracking fix wait for a person's yes?": "No, Opus makes the fix itself, and code
+// checks it." So the flow ends with Opus's own fix, and the rule "Opus's answer, checked against the record" checks it
+// (its last row: the next settled week must match again). Today the fix waits on Will on case #58 (answer 11).
 LOGIC.flow({
   id: 'twhy', parent: 'tracking', status: 'Partly built; the rest is not built yet',
   title: 'Why it broke', short: 'Why it broke',
@@ -26,20 +29,20 @@ LOGIC.flow({
     'OPUS["Opus names the cause, the<br/>day it began and the fix"]:::opus',
     'PROOF{"Code checks: does<br/>the cause explain the<br/>gap in the record?"}:::next',
     'AGAIN(["Refused, with why:<br/>Opus answers again"]):::next',
-    'CASE(["The fix goes on a case<br/>for a person"]):::will',
+    'FIX(["Opus makes the fix itself,<br/>and code checks that the<br/>counts match again"]):::next',
     'IN --> SIGNS --> CHECKS --> NEW',
     'NEW -- yes --> STANDS', 'NEW -- no --> OPUS',
     'OPUS --> PROOF',
     'PROOF -- no --> AGAIN', 'AGAIN -.-> OPUS',
-    'PROOF -- yes --> CASE'
+    'PROOF -- yes --> FIX'
   ],
-  links: { SIGNS: 'twsigns', CHECKS: 'twchecks', NEW: 'twnew', STANDS: 'twnew', OPUS: 'twopus', PROOF: 'twproof', AGAIN: 'twproof' },
+  links: { SIGNS: 'twsigns', CHECKS: 'twchecks', NEW: 'twnew', STANDS: 'twnew', OPUS: 'twopus', PROOF: 'twproof', AGAIN: 'twproof', FIX: 'twproof' },
   leaves: { twsigns: 'Five warning signs', twchecks: 'The platform checks', twnew: 'Only a new break', twopus: 'Opus names the cause', twproof: 'Opus’s answer, checked against the record' },
 
   deck: [
     { about: ['twhy'], kicker: 'The idea',
       head: 'A gap says that something broke, and the clues say what broke and when',
-      visual: { type: 'flow', rows: [{ title: 'C2’s Meta', steps: [['The gap', 'Meta’s tag counted 7 leads, but 4 came in', 'block'], ['A clue', 'the check “Every lead and sale is counted once” failed', 'will'], ['The cause', 'two Meta Lead tags fire on each form, since May 20', 'opus']], end: [['The fix goes on case #58', '', 'will']] }] },
+      visual: { type: 'flow', rows: [{ title: 'C2’s Meta', steps: [['The gap', 'Meta’s tag counted 7 leads, but 4 came in', 'block'], ['A clue', 'the check “Every lead and sale is counted once” failed', 'will'], ['The cause', 'two Meta Lead tags fire on each form, since May 20', 'opus']], end: [['Opus names the fix', 'one tag paused, the other only on the sent form', 'opus']] }] },
       vcap: 'This comes from C2’s trust calendar and its Tracking answer of Nov 1. Code finds the gap and the clues for free, so Opus starts only to name a cause that nobody has named yet.' },
     { about: ['twhy'], kicker: 'Today',
       head: 'Today the clues exist, but nothing starts when a week stops matching',
@@ -89,7 +92,7 @@ LOGIC.flow({
         ['The day it began', 'Both tags came in the Tag Manager version saved on May 20.'],
         ['The fix', 'Publish the staged Tag Manager version: pause one Meta Lead tag, and fire the other only on the sent form, with the lead’s id as its event id.'],
         ['What is at stake', 'A true Meta lead count, and what the live Meta campaign learns from, at about $33 a day.']], stamp: ['On case #58, which waits on Will', 'will'] },
-      vcap: 'A module test of Nov 1 wrote this answer. Today Opus answers only when Tracking runs, and for the whole account at once.',
+      vcap: 'A module test of Nov 1 wrote this answer. Today Opus answers only when Tracking runs, and for the whole account at once. Today its fix waits on Will, but in the plan Opus makes it itself.',
       quote: ['NO I want to have as many proposals as needed. But yes a problem should always name a fix. They should be intelligable though and thought through.', 'Nov 1'] },
     { about: ['twopus'], kicker: 'Either side can break',
       head: 'The cause can sit on the platform’s side or on the record’s side, so Opus reads both',
@@ -105,7 +108,7 @@ LOGIC.flow({
         ['The size of the gap', 'The cause must explain how far apart the counts are: two tags on each form predict up to twice the real leads, as C2’s 7 against 4.', 'pass'],
         ['What would prove it wrong', 'Each answer names one, and code runs it on the record. Bull’s answer of Nov 1 named a lead-by-lead read that shows two people sent the forms of Oct 4 and Oct 5.', 'pass'],
         ['The fix', 'After the fix goes out, the next settled week must match again.', 'pass']], end: ['An answer that fails is refused, and Opus tries again', 'code'] },
-      vcap: 'This is not built yet, and it settles the old question “Who checks Opus’s yes or no?”: the record checks it, because Will wants the record to be the proof. That is Claude’s call, from his words of Nov 7.' }
+      vcap: 'This is not built yet, and it settles the old question “Who checks Opus’s yes or no?”: the record checks it, because Will wants the record to be the proof. That is Claude’s call, from his words of Nov 7. Since Nov 8 Opus also makes each fix itself, with no person’s yes, so the last row is the check on every fix.' }
   ],
 
   examples: {
@@ -117,8 +120,8 @@ LOGIC.flow({
     OPUS: { tag: 'real', rows: [{ steps: [['C2’s Meta, Nov 1', '', 'opus'], ['Two tags send Lead on every submit', 'since May 20', 'opus']], end: [['The fix is to publish the staged Tag Manager version', '', 'opus']] }], note: 'C2’s Tracking answer of Nov 1, a module test.' },
     PROOF: { tag: 'plan', rows: [{ steps: [['Opus says Meta counts each lead twice since May 20', '', 'opus'], ['Code asks if Meta’s tag counts up to twice the real leads since then', 'from Oct 26 to Nov 1 it counted 7 against 4', 'next']], end: [['It fits, so the answer saves', '', 'next']] }], note: 'The numbers are real, from C2’s trust calendar, read on Nov 7.' },
     AGAIN: { tag: 'plan', rows: [{ steps: [['Opus says the tag went silent', '', 'opus'], ['But code sees Meta’s tag count more leads than came in', '', 'next']], end: [['Refused, because the cause does not explain the gap', '', 'block']] }], note: 'Made up, because no code checks an answer this way yet.' },
-    CASE: { tag: 'real', rows: [{ steps: [['C2’s fix', 'pause one Meta Lead tag, and fire the other only on the sent form', 'opus']], end: [['Case #58 waits on Will', '', 'will']] }], note: 'C2’s Tracking answer of Nov 1 named the case. Decide puts each fix of a module run on a case for a person.' }
+    FIX: { tag: 'plan', rows: [{ steps: [['Opus publishes C2’s staged Tag Manager version', 'the fix it named on Nov 1', 'next'], ['The next settled week', 'Meta’s tag counts each lead once', 'next']], end: [['The counts match again, so Meta is trusted from the day of the fix', '', 'keep']] }], note: 'Made from C2’s fix of Nov 1, which today waits on Will on case #58. No code checks a fix after it goes out yet.' }
   },
 
-  reviewed: { self: '9bd8f49a', above: '7441c765', on: '2026-11-07' }
+  reviewed: { self: '10ea6f6a', above: '7f08998d', on: '2026-11-08' }
 });

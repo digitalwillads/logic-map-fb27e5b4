@@ -17,7 +17,9 @@
 // Will, 2026-11-08, a note on this part: "What about if we onboard a new client and their tracking is broken. Does that
 // change this? We would want to have it find out here and then pass it to opus (as this is a validator) which would then
 // work on fixing it." So before the first send, code checks two things against the record (the click id kept, and nothing
-// else counting the same leads), each failure goes to Opus, the fix goes on a case for a person, and code checks again.
+// else counting the same leads), and each failure goes to Opus. Asked "Should Opus's tracking fix wait for a person's
+// yes?", Will said on Nov 8: "No, Opus makes the fix itself, and code checks it." So Opus makes each fix, code checks
+// again, and only a fix that needs access we do not have goes to a person (C2's Data Manager sign-in, case #57, answer 11).
 // The send itself does not change, because it never reads the client's tags. Real cases (the verifiers' trees, read
 // 2026-11-08): onboarding.toml:509-521, the goal "Conversion tracking is checked before the first dollar is spent" (its two
 // checks built = false; Verify.Dog and Bad Ass Candles pass, Take2 AI fails); fb-conversion-tracking.toml:899 (Piretti's
@@ -31,8 +33,7 @@ LOGIC.flow({
     'START(["Before the first send,<br/>such as for a new client"]):::next',
     'KEPT{"Does the record keep the<br/>click id of each lead<br/>and sale?"}:::next',
     'ONCE{"Once the send starts, will<br/>anything else count the<br/>same leads and sales?"}:::next',
-    'FIX["Opus works on the fix,<br/>from what code found"]:::next',
-    'CASE(["The fix goes on a case for<br/>a person, and code checks<br/>again once it is out"]):::next',
+    'FIX["Opus makes the fix itself,<br/>and code checks again"]:::next',
     'NEW["Each lead or sale as it comes in:<br/>its time, its own id, its value,<br/>and the click id it came with"]:::next',
     'CLICK{"Did it come from<br/>an ad click?"}:::next',
     'KEEP(["No ad click, so there is<br/>nothing to send, and it counts<br/>in the record alone"]):::next',
@@ -44,19 +45,19 @@ LOGIC.flow({
     'START --> KEPT',
     'KEPT -- no --> FIX', 'KEPT -- yes --> ONCE',
     'ONCE -- yes --> FIX', 'ONCE -- no --> NEW',
-    'FIX --> CASE', 'CASE -.-> KEPT',
+    'FIX -.-> KEPT',
     'NEW --> CLICK',
     'CLICK -- no --> KEEP', 'CLICK -- yes --> SEND',
     'SEND --> REPLY',
     'REPLY -- no --> REFUSED', 'REPLY -- yes --> TAKEN',
     'TAKEN --> BACK'
   ],
-  links: { START: 'tsfirst', KEPT: 'tsnew', ONCE: 'tsonce', FIX: 'tsfix', CASE: 'tsfix', NEW: 'tsnew', SEND: 'tswho', REPLY: 'tsreply', REFUSED: 'tsreply', BACK: 'tsback' },
+  links: { START: 'tsfirst', KEPT: 'tsnew', ONCE: 'tsonce', FIX: 'tsfix', NEW: 'tsnew', SEND: 'tswho', REPLY: 'tsreply', REFUSED: 'tsreply', BACK: 'tsback' },
   leaves: {
     tsfirst: 'A new client',
     tsnew: 'What the record must keep',
     tsonce: 'Nothing else counts them',
-    tsfix: 'Opus works on the fix',
+    tsfix: 'Opus makes the fix',
     tswho: { title: 'Who sends', open: {
       q: 'Who should send each real lead and sale to the platforms: our code, or the client’s own systems?',
       since: 'Nov 7',
@@ -97,7 +98,7 @@ LOGIC.flow({
       visual: { type: 'flow', rows: [
         { title: 'Piretti, when we took it on', steps: [['Meta reports 29 purchases worth $13,554', 'Jul 1 to Oct 4, all before us', 'code'], ['Josh says attribution was never set up right', 'its onboarding call, Sep 29', 'will']], end: [['Nobody can trust that count', '', 'block']] },
         { title: 'The same store, in the plan', steps: [['The store’s own orders are the truth', '', 'next'], ['Each order from an ad goes to Meta', 'with its click id and its order number', 'next']], end: [['Meta counts each order once, from the record', 'once the old tag stops counting', 'keep']] }] },
-      vcap: 'The send reads the client’s record, never the tags on the site, so a broken tag changes nothing in it. But two things must be right before the first send. The record must keep the click id of each lead and sale, and nothing else may count them once the send starts. Code checks both, and Opus works on each fix.',
+      vcap: 'The send reads the client’s record, never the tags on the site, so a broken tag changes nothing in it. But two things must be right before the first send. The record must keep the click id of each lead and sale, and nothing else may count them once the send starts. Code checks both, and Opus makes each fix itself.',
       quote: ['What about if we onboard a new client and their tracking is broken. Does that change this?', 'Nov 8'] },
     { about: ['tsfirst'], kicker: 'Today',
       head: 'Today the first dollar can come before anyone checks the tracking',
@@ -122,7 +123,7 @@ LOGIC.flow({
         ['A lead with its click id', 'It can be sent, because the platform ties it to the click.', 'pass'],
         ['No lead with a click id', 'The ads got clicks, but no lead carries an id, so the form drops it and nothing can be sent.', 'stop'],
         ['An order in a Shopify store', 'Shopify keeps the landing page of each order, so the click id is there once we can read the orders.', 'wait']] },
-      vcap: 'When the ids are missing, the fix is small. A hidden field on the form keeps the id from the page address, and the record saves it with the lead. Opus works on that fix, and code checks the next leads again.' },
+      vcap: 'When the ids are missing, the fix is small. A hidden field on the form keeps the id from the page address, and the record saves it with the lead. Opus makes that fix itself, and code checks the next leads again.' },
 
     { about: ['tsonce'], kicker: 'Nothing else counts them',
       head: 'When the send starts, the old count must stop on the same day, or each lead counts twice',
@@ -131,12 +132,12 @@ LOGIC.flow({
         { title: 'The switch, on one day', steps: [['The send starts', '', 'next'], ['The old action stops counting', '', 'next']], end: [['Each lead counts once', '', 'keep']] }] },
       vcap: 'This holds whether the old tag works or is broken, because the send takes the place of its count. Where a client’s own tool already sends, such as Kogalla’s Shopify to Meta, one of the two must stop, and that change needs the client’s yes.' },
 
-    { about: ['tsfix'], kicker: 'Opus works on the fix',
-      head: 'Tracking is a validator, so code finds the break, Opus works on the fix, and code checks again',
+    { about: ['tsfix'], kicker: 'Opus makes the fix',
+      head: 'Tracking is a validator, so code finds the break, Opus makes the fix itself, and code checks again',
       visual: { type: 'flow', rows: [
         { title: 'A validator today, on Opus’s own work', steps: [['A check fails, and says why', '', 'will'], ['Opus reads why and fixes its work', '', 'opus']], end: [['The check runs again', '', 'will']] },
-        { title: 'Tracking at a new client, in the plan', steps: [['Code finds that the form drops the click id', '', 'next'], ['Opus works on the fix', 'a hidden field for the click id', 'next'], ['A person says yes on the case', '', 'next']], end: [['Code checks again, and the send starts once both checks pass', '', 'next']] }] },
-      vcap: 'The first row is how a validator treats Opus’s work today. Tracking’s fix changes the client’s site or account, so the module changes nothing by itself, and each fix goes on a case for a person. Once the fix is out, code checks again.',
+        { title: 'Tracking at a new client, in the plan', steps: [['Code finds that the form drops the click id', '', 'next'], ['Opus makes the fix itself', 'a hidden field for the click id', 'next']], end: [['Code checks the next leads again, and the send starts once both checks pass', '', 'next']] }] },
+      vcap: 'The first row is how a validator treats Opus’s work today. On Nov 8 Will chose the same for Tracking, so no person says yes first. A fix that fails the check goes back to Opus, with why. Only a fix that needs access we do not have still goes to a person, such as C2’s sign-in for Google’s Data Manager on case #57.',
       quote: ['We would want to have it find out here and then pass it to opus (as this is a validator) which would then work on fixing it.', 'Nov 8'] },
 
     { about: ['tswho'], kicker: 'A question for Will',
@@ -169,8 +170,7 @@ LOGIC.flow({
     START: { tag: 'plan', rows: [{ steps: [['Piretti’s onboarding call', 'Sep 29', 'will'], ['Josh says attribution was never set up right', '', 'will']], end: [['Code checks the account before the first send', '', 'next']] }], note: 'Piretti’s words are real, from its onboarding call of Sep 29. No code runs this check yet.' },
     KEPT: { tag: 'plan', rows: [{ steps: [['C2’s newest leads', 'in its lead app', 'code'], ['The Google ones carry a gclid, but none carries an fbclid', '', 'next']], end: [['Google’s leads can be sent, but Meta’s cannot yet', '', 'block']] }], note: 'The facts are real, because C2’s lead app keeps Google’s click with each lead but not Meta’s. No code runs this check yet.' },
     ONCE: { tag: 'plan', rows: [{ steps: [['Kogalla’s Shopify sends each order to Meta', 'from its server', 'code'], ['Our send would send the same orders', '', 'next']], end: [['One of the two must stop first, with the client’s yes', '', 'block']] }], note: 'Shopify’s send to Meta is real, from Kogalla’s Tracking answer of Nov 1. Nothing of ours sends for Kogalla yet.' },
-    FIX: { tag: 'real', rows: [{ steps: [['Meta counted 7 leads, but 4 came in', 'C2, Oct 26 to Nov 1', 'code'], ['Opus finds two Meta Lead tags on each form', '', 'opus']], end: [['Opus names the fix, which pauses one tag and keeps the other only on the sent form', '', 'opus']] }], note: 'C2’s Tracking answer of Nov 1, a module test. It came on the daily path, not before a first send.' },
-    CASE: { tag: 'real', rows: [{ steps: [['C2’s fix is a staged Tag Manager version', 'one Meta Lead tag paused, the other only on the sent form', 'opus']], end: [['Case #58 waits on Will', '', 'will']] }], note: 'C2’s Tracking answer of Nov 1 proposed it, and Decide put it on a case. Nothing checks again once a fix is out yet.' },
+    FIX: { tag: 'plan', rows: [{ steps: [['C2’s lead app keeps no fbclid', 'so no Meta lead can be sent', 'block'], ['Opus makes the lead app keep the fbclid too', '', 'next'], ['Code checks the next Meta leads', 'each one carries its fbclid', 'next']], end: [['The send to Meta can start', '', 'keep']] }], note: 'The gap is real, because C2’s lead app keeps Google’s click with each lead but not Meta’s. No code makes this fix or runs this check yet.' },
     NEW: { tag: 'plan', rows: [{ steps: [['A lead comes into C2’s lead app', 'from a Google click', 'code'], ['The app keeps its time, its own id and its gclid', '', 'next']], end: [['Ready to send', '', 'next']] }], note: 'Made up from C2’s lead app, which keeps each lead’s Google click today but gives code no lead rows yet.' },
     CLICK: { tag: 'plan', rows: [{ steps: [['C2, the week of Oct 19', '10 leads came in', 'code'], ['Did each come from an ad click?', '4 came with a Google click', 'next']], end: [['Those 4 go to Google', '', 'next']] }], note: 'The numbers are real, from Barbara’s weekly lead counts for C2, read on Nov 7. The lead app keeps only Google’s click today, so the other 6 may hold Meta clicks that nobody kept.' },
     KEEP: { tag: 'plan', rows: [{ steps: [['A lead from a search with no ad', 'no click id', 'code']], end: [['Nothing to send, and it counts in the record alone', '', 'next']] }], note: 'Made up.' },
@@ -181,5 +181,5 @@ LOGIC.flow({
     BACK: { tag: 'real', rows: [{ steps: [['C2, October', '5 leads with a Google click marked bad', 'will'], ['The lead app tells Google', '', 'code']], end: [['Google takes all 5 back', '', 'keep']] }], note: 'C2’s Tracking answer of Nov 1. This piece runs today, for C2 on Google alone.' }
   },
 
-  reviewed: { self: '9a0b0987', above: '7441c765', on: '2026-11-08' }
+  reviewed: { self: '745a889f', above: '7f08998d', on: '2026-11-08' }
 });
