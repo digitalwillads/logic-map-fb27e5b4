@@ -166,7 +166,7 @@
     // No robot speak (Will, Nov 7: "It's sound like robot speak"): no chain of colons, and no coined name where plain words
     // belong. His real case: "So: a new break: Opus answers for KDX's Google". A quote of someone's own words is exempt.
     // shortcut: only the modules rewritten in plain words fail it; each rebuild adds its module, until all four are in.
-    var PLAIN = ['tracking', 'bids'];
+    var PLAIN = ['tracking', 'client', 'bids'];
     var COINED = /\bbrief\b|\bknown break\b|\bBarbara’s (?:weeks|list)\b|\bweek rules\b|\bthe walls\b/i;
     Object.keys(FLOWS).forEach(function (id) {
       var shown = [], quoted = [];
