@@ -165,8 +165,8 @@
     var POINTER = /\b(?:are|is|sits?|lives?)\s+(?:listed\s+|shown\s+|explained\s+|described\s+)?(?:in|under)\s+(?:the|its|their|another)\s+(?:\w+\s+)?(?:part|slides?|view)\b|\bsee\s+(?:the|its|their)\s+(?:\w+\s+)?(?:part|slides?|view)\b|\b(?:listed|shown|explained|described)\s+(?:in|under)\s+(?:the|its|another)\s+(?:\w+\s+)?(?:part|slides?|view)\b/i;
     // No robot speak (Will, Nov 7: "It's sound like robot speak"): no chain of colons, and no coined name where plain words
     // belong. His real case: "So: a new break: Opus answers for KDX's Google". A quote of someone's own words is exempt.
-    // shortcut: only the modules written in plain words fail it; each rebuild or new module adds its id, until all are in.
-    var PLAIN = ['tracking', 'client', 'bids', 'motion'];
+    // shortcut: only the modules rewritten in plain words fail it; each rebuild adds its module, until all four are in.
+    var PLAIN = ['tracking', 'client', 'bids'];
     var COINED = /\bbrief\b|\bknown break\b|\bBarbara’s (?:weeks|list)\b|\bweek rules\b|\bthe walls\b/i;
     Object.keys(FLOWS).forEach(function (id) {
       var shown = [], quoted = [];
