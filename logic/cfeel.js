@@ -18,11 +18,11 @@ LOGIC.flow({
   head: 'The answer shows how the client feels through their newest word on each campaign, for or against what we do',
   chart: [
     'flowchart TB',
-    'CARD["Code gives Opus the client’s newest<br/>message, the team’s newest message<br/>to them, and their newest calls"]:::code',
+    'CARD["Code gives Opus the client’s<br/>newest message, the team’s<br/>newest message to them, and<br/>their newest calls"]:::code',
     'WHOSE{"Did a person write their<br/>newest message?"}:::opus',
     'PAST(["No, a machine did, so<br/>Opus looks back to their<br/>last real message"]):::opus',
     'READ["Opus reads their mail, calls,<br/>Slack and notes itself"]:::opus',
-    'TEXTS["No Barbara tool reads their texts,<br/>so only a read on Will’s<br/>computer finds them"]:::code',
+    'TEXTS["No Barbara tool reads their<br/>texts, so only a read on<br/>Will’s computer finds them"]:::code',
     'CAMP["Opus finds each live campaign<br/>itself, because the fact<br/>sheet lists none"]:::opus',
     'SAYS(["Their newest word on each live<br/>campaign, for or against<br/>what we do"]):::opus',
     'CARD --> WHOSE',
@@ -135,5 +135,5 @@ LOGIC.flow({
     SAYS: { tag: 'real', rows: [{ steps: [['LA + NY', 'he approved the raise to $200 a day on Oct 14', 'keep']], end: [['No word from him on the cut of Oct 30', '', 'block']] }], note: 'We took this from the answer that the client module wrote for C2 on Nov 1.' }
   },
 
-  reviewed: { self: '73d20ecd', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: 'f3025d49', above: 'f4196f57', on: '2026-11-08' }
 });

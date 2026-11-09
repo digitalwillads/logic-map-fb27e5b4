@@ -18,7 +18,7 @@ LOGIC.flow({
   head: 'The client’s own words say what they want, so the answer gives each want in those words, with who said it and when',
   chart: [
     'flowchart TB',
-    'PAGE["The strategy page says what the<br/>client wants, what winning looks<br/>like, the plan, and what never to do"]:::code',
+    'PAGE["The strategy page says what<br/>the client wants, what winning<br/>looks like, the plan, and<br/>what never to do"]:::code',
     'WRITTEN{"Is the page<br/>written?"}:::code',
     'NONE(["No page is written, so the<br/>fact sheet says so, and Opus<br/>must say so in its answer"]):::code',
     'TGT["The targets in force, each<br/>with who set it and when"]:::code',
@@ -113,5 +113,5 @@ LOGIC.flow({
     WANTS: { tag: 'real', rows: [{ steps: [['Scale the budget, but not in vain', 'Waylon, Sep 24', 'will'], ['A page that shows which source sends the bad leads', 'Oct 7, and “asap” on Oct 14', 'will']], end: [['Each want, with its day and its call or mail', '', 'opus']] }], note: 'We took this from the answer that the client module wrote for C2 on Nov 1.' }
   },
 
-  reviewed: { self: 'f97c9d0a', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: '49b467c5', above: 'f4196f57', on: '2026-11-08' }
 });

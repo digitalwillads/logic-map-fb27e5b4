@@ -25,7 +25,7 @@ LOGIC.flow({
     'CRM["15 checks on the client’s<br/>record and its money"]:::will',
     'OUT["Left out are the limit checks and<br/>tool checks of those three groups"]:::will',
     'TODAY{"Did each of the three groups<br/>already run today?"}:::will',
-    'LINES["Each check that did not pass becomes<br/>an item to answer, as a failure, a<br/>question, or a check that could not run"]:::will',
+    'LINES["Each check that did not pass<br/>becomes an item to answer, as<br/>a failure, a question, or a<br/>check that could not run"]:::will',
     'PUSH["The results go to Barbara,<br/>and each item keeps its id"]:::code',
     'ANS(["Opus answers each failure and<br/>each question, naming its id"]):::opus',
     'LISTED --> RUN',
@@ -154,5 +154,5 @@ LOGIC.flow({
     ANS: { tag: 'real', rows: [{ steps: [['The checks in C2’s test answer', 'the 8 failures, the 3 that could not run, and the scorecard’s flag', 'opus'], ['Answered in words', 'with no ids, and no run named', 'opus']], end: [['12 checks answered', '', 'opus']] }], note: 'We took this from the answer that the client module wrote for C2 on Nov 1.' }
   },
 
-  reviewed: { self: '6a08d755', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: '7775fd23', above: 'f4196f57', on: '2026-11-08' }
 });

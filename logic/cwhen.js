@@ -20,12 +20,12 @@ LOGIC.flow({
   head: 'The client module reads the account again when the client writes or calls, when the strategy page is blank, or when its last answer is {clientFresh} days old',
   chart: [
     'flowchart TB',
-    'NEW["Code looks at what has come in<br/>since the module’s last real answer"]:::code',
+    'NEW["Code looks at what has come<br/>in since the module’s last<br/>real answer"]:::code',
     'TEST(["Or a person tests it,<br/>and no reason is needed"]):::will',
     'WORDS{"Did the client write or call,<br/>and has no run handled it yet?"}:::code',
     'BLANK{"Is the strategy page blank, and<br/>has Will never been asked for it?"}:::code',
     'STALE{"Is the last real answer<br/>{clientFresh} days old, or is there none?"}:::code',
-    'DUE(["The module reads the client<br/>today, for the first reason that fits"]):::opus',
+    'DUE(["The module reads the client<br/>today, for the first<br/>reason that fits"]):::opus',
     'NOT(["No reason to read today, so<br/>the last answer still counts"]):::code',
     'WAKE["Texts and Slack messages from<br/>the client do not count yet"]:::next',
     'NEW --> WORDS',
@@ -157,5 +157,5 @@ LOGIC.flow({
     WAKE: { tag: 'plan', rows: [{ steps: [['Waylon’s texts in the C2 Ads group', 'Oct 30, 3:59 to 5:01 PM ET', 'next'], ['No text reaches Barbara', 'nothing sends texts there yet', 'next']], end: [['A text would make the module read again', '', 'next']] }], note: 'Not built. C2’s test read those texts on Will’s computer, and Slack messages cannot make the module read again yet either.' }
   },
 
-  reviewed: { self: '56a7b466', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: '38166a55', above: 'f4196f57', on: '2026-11-08' }
 });

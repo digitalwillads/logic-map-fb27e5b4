@@ -149,5 +149,5 @@ LOGIC.flow({
     WHO: { tag: 'real', rows: [{ steps: [['The 18 mail quotes in C2’s test answer', '11 are Waylon’s, 5 are Will’s and 2 are Isaac’s', 'opus'], ['Who said them?', 'code never checks', 'code']], end: [['All 18 checked the same way', '', 'code']] }], note: 'We took this from the answer that the client module wrote for C2 on Nov 1.' }
   },
 
-  reviewed: { self: '76ebca37', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: '76ebca37', above: 'f4196f57', on: '2026-11-08' }
 });

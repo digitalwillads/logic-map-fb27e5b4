@@ -23,12 +23,12 @@ LOGIC.flow({
   head: 'The client module reads what the client has said, so every module after it knows what the client wants and how they feel',
   chart: [
     'flowchart TB',
-    'WHEN(["It reads again when the client<br/>writes or calls, when their strategy<br/>page is blank, or when its answer<br/>is {clientFresh} days old"]):::code',
-    'WANT["What does the client want?<br/>Their strategy page, their targets<br/>and their newest words say"]:::opus',
+    'WHEN(["It reads again when the client<br/>writes or calls, when their<br/>strategy page is blank, or when<br/>its answer is {clientFresh} days old"]):::code',
+    'WANT["What does the client want? Their<br/>strategy page, their targets and<br/>their newest words say"]:::opus',
     'FEEL["How do they feel about our work?<br/>Their newest word on each live<br/>campaign shows it"]:::opus',
     'OWE["What did we tell them, what do<br/>we owe them, and who must say<br/>yes before a change?"]:::opus',
     'PROOF["Every point rests on a quote, and<br/>code finds each quote in the<br/>mail or call it came from"]:::code',
-    'GOALS["Will’s 27 checks run on the inbox,<br/>the meetings and the client’s record,<br/>and Opus answers each one that<br/>does not pass"]:::will',
+    'GOALS["Will’s 27 checks run on the<br/>inbox, the meetings and the<br/>client’s record, and Opus<br/>answers each one that<br/>does not pass"]:::will',
     'CHECK{"Does the answer pass<br/>code’s checks?"}:::code',
     'GIVE(["The modules after it use this<br/>one answer for the whole account<br/>for up to {clientFresh} days"]):::code',
     'WHEN --> WANT', 'WANT --> FEEL', 'FEEL --> OWE', 'OWE --> PROOF', 'PROOF --> GOALS', 'GOALS --> CHECK',
@@ -141,5 +141,5 @@ LOGIC.flow({
     GIVE: { tag: 'real', rows: [{ steps: [['C2’s test answer, Nov 1', 'a problem', 'opus'], ['The In motion module’s later answers that day', 'they repeat its whole summary', 'code']], end: [['C2’s fact sheet of Nov 7 asks Opus to test that answer first', '', 'code']] }], note: 'We took these from the client module’s answer for C2 on Nov 1, the In motion module’s answers that day, and C2’s fact sheet of Nov 7.' }
   },
 
-  reviewed: { self: '1ca0129c', on: '2026-11-08' }
+  reviewed: { self: '9e79099d', on: '2026-11-08' }
 });

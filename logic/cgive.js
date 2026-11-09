@@ -20,8 +20,8 @@ LOGIC.flow({
   chart: [
     'flowchart TB',
     'ONE(["One answer for the whole<br/>account, with its verdict,<br/>its date and its summary"]):::code',
-    'NEEDS["The five modules after it cannot save<br/>unless the client module answered<br/>in the last {clientFresh} days"]:::code',
-    'MOTION["The In motion module lists its<br/>summary as what we told the client"]:::code',
+    'NEEDS["The five modules after it<br/>cannot save unless the client<br/>module answered in the<br/>last {clientFresh} days"]:::code',
+    'MOTION["The In motion module lists<br/>its summary as what we<br/>told the client"]:::code',
     'DRAFT["A blank strategy page is drafted<br/>from this answer, and Barbara<br/>sets it by rule"]:::code',
     'NEXT["Tomorrow’s answer starts by<br/>testing what would prove<br/>this one wrong"]:::code',
     'MARK(["Will can mark the answer<br/>right or wrong, and the next<br/>answer reads his mark"]):::will',
@@ -92,5 +92,5 @@ LOGIC.flow({
     MARK: { tag: 'made', rows: [{ steps: [['Will marks an answer wrong', 'with a note', 'will'], ['The next morning’s fact sheet', 'carries his mark and his note', 'code']], end: [['Opus reads his mark before it answers', '', 'opus']] }], note: 'Made up, because no answer of the client module carries a mark yet. The fact sheets of Nov 7 show none on C2, Bull Legal or Kogalla.' }
   },
 
-  reviewed: { self: 'ffc3dd34', above: '1f7809b6', on: '2026-11-08' }
+  reviewed: { self: '01e1bb72', above: 'f4196f57', on: '2026-11-08' }
 });
