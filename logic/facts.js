@@ -78,5 +78,14 @@ LOGIC.facts({
   motionWordChars: 300, // TASK_WORD_CHARS (code.rs:36): each comment is cut to this many characters
   motionAsked: 200,     // ASKED_CHARS (code.rs:33): a question's first line is cut to this many characters
   motionFresh: 7,       // FRESH_DAYS (mod.rs:59): the list counts this many New York days for the modules that need it
-  motionLine: 300       // MOTION_LINE_CHARS (numbers.rs:51): the Decide module reads each line of the list cut to this many characters
+  motionLine: 300,      // MOTION_LINE_CHARS (numbers.rs:51): the Decide module reads each line of the list cut to this many characters
+
+  // The Money module (comm-chat at origin/main 1c24d43a: src/modules/brief/code.rs, src/spend_box.rs, numbers.rs, src/scorecard/; read 2026-11-08).
+  moneyPace: 14,        // PACE_DAYS (spend_box.rs:69): the real pace is each campaign's spend over this many stored days
+  moneyMonth: 30,       // FULL_MONTH_DAYS (code.rs:30, spend_box.rs:72): the pace stands against each cap over this many days
+  moneyWeeks: 2,        // TRUST_WEEKS (spend_box.rs:75): a raise needs this many newest full weeks of Google trusted
+  moneyFresh: 7,        // FRESH_DAYS (mod.rs:59): the answer counts this many New York days for the modules that need it
+  moneyLine: 300,       // PROOF_LINE_CHARS (numbers.rs:49): the Decide module reads each line of the answer cut to this many characters
+  moneyTargetDays: 30,  // the target lines read the last 30 settled days (scorecard/compute.rs:374-392)
+  moneyFew: 10          // FEW (results/compute.rs:18): under this many conversions a target line says too few to tell
 });
