@@ -87,5 +87,22 @@ LOGIC.facts({
   moneyFresh: 7,        // FRESH_DAYS (mod.rs:59): the answer counts this many New York days for the modules that need it
   moneyLine: 300,       // PROOF_LINE_CHARS (numbers.rs:49): the Decide module reads each line of the answer cut to this many characters
   moneyTargetDays: 30,  // the target lines read the last 30 settled days (scorecard/compute.rs:374-392)
-  moneyFew: 10          // FEW (results/compute.rs:18): under this many conversions a target line says too few to tell
+  moneyFew: 10,         // FEW (results/compute.rs:18): under this many conversions a target line says too few to tell
+
+  // The Setup and market module (comm-chat at origin/main 1c24d43a: src/modules/mod.rs, day.rs, brief/numbers.rs, brief/reads.rs, run.rs, src/chat/tools/market_view.rs; the verifiers' verify/src/modules.rs; read 2026-11-08).
+  marketFresh: 7,       // FRESH_DAYS (mod.rs:59): an answer counts this many New York days, so the module reads at least this often
+  marketLive: 30,       // LIVE_DAYS (brief/numbers.rs:30): a campaign is live when it spent in this many stored days
+  marketByItself: 30,   // brief/numbers.rs:573: what Google or a platform changed by itself is read this many days back
+  marketShown: 8,       // CHANGES_SHOWN (brief/numbers.rs:36): at most this many of those changes are listed
+  marketDays: 30,       // MARKET_DAYS (brief/reads.rs:156): a kept market read stands this many days; an older one or none asks for a new read
+  marketChars: '6,000', // MARKET_CHARS (brief/numbers.rs:57): the newest market read is cut to this many characters in the facts
+  marketFrom: '8 AM',   // AUCTION_FROM_HOUR (market_view.rs:735): who shows ads is read on weekdays from this hour, in the account's time zone
+  marketTo: '6 PM',     // AUCTION_TO_HOUR (market_view.rs:736): ... to this hour
+  marketGoals: 16,      // the goals of `verify module setup` (verify/src/modules.rs GOAL_MODULES and the Competitors area), counted from the trees
+  marketChecksDays: 14, // exam WINDOW_MS (validators_api/exam.rs:31): a stored check's newest result counts this long
+  marketRunAge: 24,     // run::MAX_AGE_MS in hours (run.rs:28): a module run older than this is refused, once runs are pushed
+  marketSummary: 600,   // SUMMARY_CHARS (brief/numbers.rs:46): Decide reads the summary in a line of at most this many characters
+  marketProposal: 900,  // PROPOSAL_CHARS (brief/numbers.rs:47): each proposal, at most this many
+  marketAsk: 400,       // ASK_CHARS (brief/numbers.rs:48): each question, at most this many
+  marketWrong: 600      // WRONG_CHARS (brief/mod.rs:157): the facts quote at most this many characters of what the last answer said would prove it wrong
 });
