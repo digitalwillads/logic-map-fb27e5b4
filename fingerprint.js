@@ -55,22 +55,31 @@
     return fnv(JSON.stringify([chartPrint(flow, facts), used.map(function (k) { return [k, facts[k]]; })]));
   }
 
+  // The part above a part: its parent, or, for a module's top part (no parent), the part whose box opens it, the
+  // morning run since Nov 8. None for the map's own top.
+  function aboveOf(flows, id) {
+    var f = flows[id];
+    if (f.parent) return flows[f.parent] ? f.parent : null;
+    var up = Object.keys(flows).filter(function (p) { var l = flows[p].links || {}; return Object.keys(l).some(function (b) { return l[b] === id; }); });
+    return up[0] || null;
+  }
+
   // The parts that are out of date. "self": its own flowchart, or a fact it shows, changed since its review.
   // "above": the flowchart of the part above it changed since its review.
   function stale(flows, facts) {
     var out = [];
     Object.keys(flows).forEach(function (id) {
-      var f = flows[id], r = f.reviewed || {}, self = selfPrint(f, facts);
+      var f = flows[id], r = f.reviewed || {}, self = selfPrint(f, facts), up = aboveOf(flows, id);
       if (r.self !== self) out.push({ id: id, what: 'self', was: r.self || null, now: self });
-      if (f.parent && flows[f.parent]) {
-        var above = chartPrint(flows[f.parent], facts);
-        if (r.above !== above) out.push({ id: id, what: 'above', parent: f.parent, was: r.above || null, now: above });
+      if (up) {
+        var above = chartPrint(flows[up], facts);
+        if (r.above !== above) out.push({ id: id, what: 'above', parent: up, was: r.above || null, now: above });
       }
     });
     return out;
   }
 
-  var api = { fnv: fnv, fmt: fmt, fill: fill, tokens: tokens, chartPrint: chartPrint, selfPrint: selfPrint, stale: stale };
+  var api = { fnv: fnv, fmt: fmt, fill: fill, tokens: tokens, chartPrint: chartPrint, selfPrint: selfPrint, aboveOf: aboveOf, stale: stale };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.FLOWDOCS_FP = api;
 })(this);

@@ -181,5 +181,5 @@ LOGIC.flow({
     GIVE: { tag: 'real', rows: [{ steps: [['Kogalla’s answer of Nov 1', 'it proposes removing the price list', 'opus'], ['The Decide module reads that fix', 'together with every other module’s answer', 'code']], end: [['Its first decision removes the price list', 'together with the fix that shows only the RA Light Kit', 'opus']] }], note: 'We took this from the answer that the Decide module wrote for Kogalla in a test on Nov 1, which we read in a copy of Barbara’s data.' }
   },
 
-  reviewed: { self: '7ff42090', on: '2026-11-08' }
+  reviewed: { self: '7ff42090', above: '2525099a', on: '2026-11-08' }
 });

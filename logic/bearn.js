@@ -94,5 +94,5 @@ LOGIC.flow({
     EVEN: { tag: 'real', rows: [{ steps: [['Kogalla’s PMax, Nov 1', 'no break-even line from code', 'code'], ['Opus reads the strategy page', 'a 167% return at a 60% margin', 'opus']], end: [['It judges PMax against 167%', '', 'opus']] }], note: 'Kogalla’s last answer of Nov 1, and its strategy page, as code showed them to Opus on Nov 7.' }
   },
 
-  reviewed: { self: '2cbbef25', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: '2cbbef25', above: 'a030a55d', on: '2026-11-08' }
 });

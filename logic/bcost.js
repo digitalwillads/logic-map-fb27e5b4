@@ -107,5 +107,5 @@ LOGIC.flow({
     WEEKS: { tag: 'real', rows: [{ steps: [['Bull’s Hedge Funds and PE campaign', 'its newest {bidWeeks} weeks', 'code']], end: [['The week of Oct 5 is marked not trusted', 'and none of the eight brought a lead', 'block']] }], note: 'The facts that code gathered for that campaign on Nov 7.' }
   },
 
-  reviewed: { self: '30456f83', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: '30456f83', above: 'a030a55d', on: '2026-11-08' }
 });

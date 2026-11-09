@@ -135,5 +135,5 @@ LOGIC.flow({
     SAME: { tag: 'plan', rows: [{ steps: [['One push', 'the run and its failures', 'next'], ['The facts', 'read the failures from it', 'next']], end: [['No second source', '', 'next']] }], note: 'Not built yet. The modules design names it.' }
   },
 
-  reviewed: { self: 'ad83125f', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: 'ad83125f', above: 'a030a55d', on: '2026-11-08' }
 });

@@ -104,5 +104,15 @@ LOGIC.facts({
   marketSummary: 600,   // SUMMARY_CHARS (brief/numbers.rs:46): Decide reads the summary in a line of at most this many characters
   marketProposal: 900,  // PROPOSAL_CHARS (brief/numbers.rs:47): each proposal, at most this many
   marketAsk: 400,       // ASK_CHARS (brief/numbers.rs:48): each question, at most this many
-  marketWrong: 600      // WRONG_CHARS (brief/mod.rs:157): the facts quote at most this many characters of what the last answer said would prove it wrong
+  marketWrong: 600,      // WRONG_CHARS (brief/mod.rs:157): the facts quote at most this many characters of what the last answer said would prove it wrong
+
+  // The morning run (comm-chat at origin/main 1c24d43a: src/modules/mod.rs, brief/, src/claude_code_jobs.rs, src/spend_box.rs, src/run_report/mod.rs; read 2026-11-08).
+  runFresh: 7,      // FRESH_DAYS (modules/mod.rs:59): a real answer keeps its module from running again for this many New York days
+  runMost: 8,       // MOST_CAMPAIGNS (modules/mod.rs:61): the campaign modules answer at most this many campaigns, the most money first
+  runLive: 30,      // LIVE_DAYS (modules/brief/numbers.rs:29): a campaign is live when it spent in this many stored days
+  runWindow: 9,     // WINDOW_MINUTES / 60 (claude_code_jobs.rs:1533): a morning run waits this many hours for Will's computer, then the day is missed
+  runStall: 4,      // MODULE_STALL_MS in hours (claude_code_jobs.rs:6333): a module run with no turn this long closes as stuck
+  runDecisions: 3,  // DECISIONS_MAX (run_report/mod.rs:108): the run's report keeps Decide's first this many decisions
+  runPace: 14,      // PACE_DAYS (spend_box.rs:69): Money and the spend box read the real pace of this many days
+  runMonth: 30      // FULL_MONTH_DAYS (modules/brief/code.rs:30): Money holds that pace against each cap over this many days
 });

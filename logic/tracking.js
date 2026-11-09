@@ -88,7 +88,7 @@ LOGIC.flow({
       visual: { type: 'bars', max: 380, rows: [
         { label: 'C2’s full run, Nov 4', parts: [[192, 'code', '192M tokens']] },
         { label: 'The module dry run, Nov 4, on a copy', parts: [[380, 'opus', '380M tokens']] }] },
-      vcap: 'Since the merge of Nov 7, the morning module run stays off in live until Will says yes to its cost. Until then he can still test one module on one client, with Run under Validators and then Modules.',
+      vcap: 'Since the merge on the evening of Nov 6, the morning module run stays off in live until Will says yes to its cost. Until then he can still test one module on one client, with Run under Validators and then Modules.',
       stats: [['About 2x', 'the tokens of a module run against a full run', 'real']] }
   ],
 
@@ -105,5 +105,5 @@ LOGIC.flow({
     HAND: { tag: 'plan', rows: [{ steps: [['C2, a morning', '', 'next']], end: [['Google is trusted from Oct 1', '', 'keep'], ['Meta is rebuilt from the record each day', 'until its fix goes out', 'next']] }], note: 'Today one answer covers the whole account, and nothing rebuilds a number.' }
   },
 
-  reviewed: { self: 'e037db1e', on: '2026-11-08' }
+  reviewed: { self: 'e037db1e', above: '2525099a', on: '2026-11-08' }
 });

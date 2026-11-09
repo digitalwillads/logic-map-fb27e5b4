@@ -98,5 +98,5 @@ LOGIC.flow({
     SAVE: { tag: 'real', rows: [{ steps: [['C2’s Brand campaign', 'Opus says keep', 'opus']], end: [['Saved as good', '', 'keep']] }], note: 'C2’s answer 52, of Nov 1.' }
   },
 
-  reviewed: { self: '35d21692', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: '35d21692', above: 'a030a55d', on: '2026-11-08' }
 });

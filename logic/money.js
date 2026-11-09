@@ -175,5 +175,5 @@ LOGIC.flow({
     TRUE: { tag: 'plan', rows: [{ steps: [['C2’s Google weeks', 'each week rebuilt from the real leads in C2’s lead app', 'next']], end: [['The box decides on the true count of leads', '', 'next']] }], note: 'Nothing of this is built. Today the box trusts a week of Google’s numbers unless code finds a warning sign in it.' }
   },
 
-  reviewed: { self: 'c7c2be68', on: '2026-11-08' }
+  reviewed: { self: 'c7c2be68', above: '2525099a', on: '2026-11-08' }
 });

@@ -104,5 +104,5 @@ LOGIC.flow({
     SET: { tag: 'real', rows: [{ steps: [['C2’s Competitor campaign', '$3.77 a day less, or a pause', 'opus']], end: [['About $17.72 or $72 a week saved', 'for 0.02 or 0.03 conversions a week given up', 'code']] }], note: 'C2’s answer 53, of Nov 1.' }
   },
 
-  reviewed: { self: 'ab2de63b', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: 'ab2de63b', above: 'a030a55d', on: '2026-11-08' }
 });

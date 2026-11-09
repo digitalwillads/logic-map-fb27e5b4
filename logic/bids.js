@@ -28,7 +28,7 @@ LOGIC.flow({
     'GOALS["Eight of Will’s checks on bids<br/>and budgets, and an answer<br/>to each one that fails"]:::will',
     'BID{"Is the bid right? Keep,<br/>raise, cut, or too<br/>few to tell"}:::opus',
     'CHECK{"Does the answer pass<br/>code’s checks?"}:::code',
-    'DECIDE(["Decide weighs every proposal,<br/>the most money a month first"]):::opus',
+    'DECIDE(["Decide weighs every proposal,<br/>deadlines first, then the money"]):::opus',
     'NEXT(["The next morning starts with<br/>what would prove the<br/>answer wrong"]):::code',
     'WHEN --> NEEDS', 'NEEDS --> EARN', 'EARN --> COST', 'COST --> MONEY', 'MONEY --> GOALS', 'GOALS --> BID',
     'TRUE -. "not built" .-> COST',
@@ -133,5 +133,5 @@ LOGIC.flow({
     NEXT: { tag: 'real', rows: [{ steps: [['Bull’s Hedge Funds answer', 'Nov 1', 'opus'], ['The facts of Nov 7', 'open with its test', 'code']], end: [['Test it first, from today’s data', '', 'code']] }], note: 'Its test names the firm’s own leads, searches lost to budget at the $15 bid, a simulator point near $300, and the read of Nov 11.' }
   },
 
-  reviewed: { self: '9a38bdd6', on: '2026-11-07' }
+  reviewed: { self: 'fb2a7752', above: '2525099a', on: '2026-11-08' }
 });

@@ -32,7 +32,8 @@
       if (!N[leaf]) N[leaf] = typeof v === 'string' ? { title: v } : { title: v.title, open: v.open };
     });
   });
-  // Each top part is a module, in load order. With no hash the page opens the first one.
+  // Each part with no parent tops a module, in load order. The first is the morning run (Nov 8), whose boxes open each
+  // module's top part: with no hash the page opens it, and the module list lists it first.
   var MODULES = Object.keys(FLOWS).filter(function (id) { return !FLOWS[id].parent; }), ROOT = MODULES[0];
   // The yellow glow pulses by SVG animation, which ignores the reduced-motion setting: drop it for those viewers.
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('svg.defs animate').forEach(function (x) { x.remove(); });
@@ -47,6 +48,9 @@
   Object.keys(N).forEach(function (id) { (N[id].kids || []).forEach(function (k) { PARENT[k] = id; }); });
   function pathOf(id) { var p = []; for (var x = id; x; x = PARENT[x]) p.unshift(x); return p; }
   function depthOf(id) { return pathOf(id).length - 1; }
+  // A part's module: the deepest part on its path with no parent field. The morning run opens each module's top, so every
+  // path starts with the morning run, and the module stays the unit of the questions, the menu and the plain-words check.
+  function moduleOf(id) { var p = pathOf(id); for (var i = p.length - 1; i > 0; i--) if (FLOWS[p[i]] && !FLOWS[p[i]].parent) return p[i]; return p[0]; }
   function titleOf(id) { return N[id].short || N[id].title; }
   function statusOf(id) { var p = pathOf(id).reverse(); for (var i = 0; i < p.length; i++) if (N[p[i]].status) return N[p[i]].status; return ''; }
   function pathText(id) { return pathOf(id).map(titleOf).join(' › '); }
@@ -122,6 +126,8 @@
     });
     Object.keys(seen).forEach(function (k) { if (seen[k] > 1) problems.push(k + ' has ' + seen[k] + ' parents'); });
     Object.keys(N).forEach(function (id) { if (MODULES.indexOf(id) < 0 && !PARENT[id]) problems.push(id + ' has no parent'); });
+    // A new module's box goes in the morning run (Nov 8), so each module opens from it and its path starts there.
+    MODULES.slice(1).forEach(function (m) { if (!PARENT[m] || moduleOf(PARENT[m]) !== ROOT) problems.push(titleOf(m) + ' is a module, but no box of ' + titleOf(ROOT) + ' opens it'); });
     // A second part with the same id would replace the first one in silence (index.html's LOGIC.flow keeps the names).
     (LOGIC._dups || []).forEach(function (id) { problems.push(id + ' is the id of two parts: give one a new id'); });
     Object.keys(DECKS).forEach(function (d) {
@@ -168,7 +174,7 @@
     // No robot speak (Will, Nov 7: "It's sound like robot speak"): no chain of colons, and no coined name where plain words
     // belong. His real case: "So: a new break: Opus answers for KDX's Google". A quote of someone's own words is exempt.
     // shortcut: only the modules written in plain words fail it; each rebuild or new module adds its id, until all are in.
-    var PLAIN = ['tracking', 'client', 'bids', 'motion', 'money', 'market'];
+    var PLAIN = ['morning', 'tracking', 'client', 'bids', 'motion', 'money', 'market'];
     var COINED = /\bbrief\b|\bknown break\b|\bBarbara’s (?:weeks|list)\b|\bweek rules\b|\bthe walls\b|\bread-back\b/i;
     Object.keys(FLOWS).forEach(function (id) {
       var shown = [], quoted = [];
@@ -184,7 +190,7 @@
       var all = shown.concat(quoted);
       all.filter(function (t) { return DESIG.test(t); }).forEach(function (t) { problems.push(id + ': a designator in “' + t.slice(0, 70) + '”: use the plain name'); });
       all.filter(function (t) { return POINTER.test(t); }).forEach(function (t) { problems.push(id + ': “' + t.slice(0, 70) + '” sends the reader to another part: show it here'); });
-      if (PLAIN.indexOf(pathOf(id)[0]) >= 0) shown.forEach(function (t) {
+      if (PLAIN.indexOf(moduleOf(id)) >= 0) shown.forEach(function (t) {
         if ((t.replace(/\d:\d\d|https?:/g, '').match(/:/g) || []).length > 1) problems.push(id + ': “' + t.slice(0, 70) + '” chains colons: say it in sentences');
         var c = t.match(COINED);
         if (c) problems.push(id + ': “' + t.slice(0, 70) + '” uses the coined name “' + c[0] + '”: say it in plain words');
@@ -196,8 +202,9 @@
       if (f.parent && !up) problems.push(id + ': the part above it, ' + f.parent + ', is missing');
       if (up && !Object.keys(up.links || {}).some(function (b) { return up.links[b] === id; })) problems.push((up.short || up.title) + ' has no box that opens ' + (f.short || f.title));
       Object.keys(f.links || {}).forEach(function (b) {
-        var t = f.links[b], ok = (f.leaves && Object.prototype.hasOwnProperty.call(f.leaves, t)) || (FLOWS[t] && FLOWS[t].parent === id);
-        if (!ok) problems.push(id + ': box ' + b + ' opens ' + t + ', which is not a rule of this part or a part below it');
+        // A module's top part has no parent: the morning run's box opens it (Nov 8).
+        var t = f.links[b], ok = (f.leaves && Object.prototype.hasOwnProperty.call(f.leaves, t)) || (FLOWS[t] && (FLOWS[t].parent === id || !FLOWS[t].parent));
+        if (!ok) problems.push(id + ': box ' + b + ' opens ' + t + ', which is not a rule of this part, a part below it or a module');
       });
       Object.keys(f.leaves || {}).forEach(function (l) { if (FLOWS[l]) problems.push(l + ' is both a part and a rule'); });
       var unknown = Object.keys(FP.tokens(RAW[id])).filter(function (k) { return !Object.prototype.hasOwnProperty.call(F, k); });
@@ -249,11 +256,22 @@
     return mermaid.render('mmd' + (++seq), N[id].chart.concat(DEFS).join('\n')).then(function (out) {
       el.innerHTML = out.svg;
       bindBoxes(el, id);
+      startAtFirstBox(el, id);
       console.log('[flowdocs] chart drawn', { node: id, ms: Math.round(performance.now() - t0) });
     }).catch(function (e) {
       el.innerHTML = '<p class="chart-err">The chart did not draw.</p>';
       console.error('[flowdocs] chart failed', { node: id, error: String(e) });
     });
+  }
+  // A phone scrolls a wide chart sideways (index.html gives its svg no max width there). Open it on its first box, not on
+  // an empty edge: the morning run's chart, the first view since Nov 8, starts far to the right.
+  function startAtFirstBox(el, id) {
+    if (el.scrollWidth <= el.clientWidth) return;
+    var box = el.getBoundingClientRect(), first = null;
+    el.querySelectorAll('g.node').forEach(function (g) { var r = g.getBoundingClientRect(); if (!first || r.top < first.top) first = r; });
+    if (!first) return;
+    el.scrollLeft = Math.max(0, first.left - box.left + el.scrollLeft + first.width / 2 - el.clientWidth / 2);
+    console.log('[flowdocs] chart opens on its first box', { node: id, scrollLeft: el.scrollLeft, width: el.scrollWidth });
   }
   // Example off: a box that opens glows on hover in its own color (a flow opens its flowchart, a rule
   // opens its slide). Example on: every step glows, and a click shows that step's example below.
@@ -298,8 +316,9 @@
   }
 
   function kickerHTML(id, label) {
-    var d = depthOf(id), st = statusOf(id);
-    var s = '<p class="kicker">' + esc(label || (LEVELS[d] + ' · level ' + (d + 1)));
+    // The level counts from the part's own module; a top part that is no module (the morning run) names itself (`level`).
+    var d = depthOf(id) - depthOf(moduleOf(id)), st = statusOf(id), word = (!d && FLOWS[id] && FLOWS[id].level) || LEVELS[d];
+    var s = '<p class="kicker">' + esc(label || (word + ' · level ' + (d + 1)));
     if (st) s += ' <span class="st' + (/not (built|live)/i.test(st) ? ' next' : '') + '">' + esc(st) + '</span>';
     return s + '</p>';
   }
@@ -594,7 +613,7 @@
     if (menuOn) setMenu(false);
     try {
       drawCrumbs(r.id);
-      if (!prev || pathOf(prev.id)[0] !== pathOf(r.id)[0]) drawQuestions(); // another module: its own questions
+      if (!prev || moduleOf(prev.id) !== moduleOf(r.id)) drawQuestions(); // another module: its own questions
       vFlow.setAttribute('aria-pressed', String(!r.slides));
       vSlides.setAttribute('aria-pressed', String(r.slides));
       exToggle.hidden = r.slides; // examples belong to the flowchart
@@ -670,11 +689,11 @@
     crumbsEl.scrollLeft = crumbsEl.scrollWidth;
   }
 
-  // The module list: each top part, in load order. A click on one opens its top flowchart.
+  // The module list: the morning run, then each module, in load order. A click on one opens its top flowchart.
   var menuOn = false, modmenu = document.getElementById('modmenu');
   function setMenu(on) {
     menuOn = on;
-    var b = document.getElementById('modbtn'), here = cur ? pathOf(cur.id)[0] : ROOT;
+    var b = document.getElementById('modbtn'), here = cur ? moduleOf(cur.id) : ROOT;
     if (b) b.setAttribute('aria-expanded', String(on));
     modmenu.hidden = !on;
     if (on) {
@@ -887,7 +906,7 @@
     var b = e.target.closest('[data-module]');
     if (!b) return;
     var to = b.getAttribute('data-module');
-    console.log('[flowdocs] module', { from: cur && pathOf(cur.id)[0], to: to, view: cur && cur.slides ? 'slides' : 'flowchart' });
+    console.log('[flowdocs] module', { from: cur && moduleOf(cur.id), to: to, view: cur && cur.slides ? 'slides' : 'flowchart' });
     setMenu(false);
     go(to, false);
   });
@@ -901,10 +920,10 @@
   // its slide (Will, Nov 6: "Can we have a toogle that opens a list of where the questions are?"; Nov 7: "each module
   // only shows the questions that it has for that module"). It shows in both views.
   var qOn = false, qToggle = document.getElementById('q-toggle'), qPanel = document.getElementById('qpanel');
-  function moduleNow() { return pathOf(cur ? cur.id : ROOT)[0]; }
+  function moduleNow() { return moduleOf(cur ? cur.id : ROOT); }
   function openQuestions() {
     var m = moduleNow();
-    return Object.keys(N).filter(function (id) { return N[id].open && pathOf(id)[0] === m; }).map(function (id) {
+    return Object.keys(N).filter(function (id) { return N[id].open && moduleOf(id) === m; }).map(function (id) {
       var k = slidesOf(id).map(function (x) { return x.s.open; }).indexOf(id);
       return { id: id, q: N[id].open.q, where: pathText(id), slide: Math.max(0, k), answered: answerOf(id) >= 0 };
     });

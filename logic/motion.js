@@ -84,7 +84,7 @@ LOGIC.flow({
         { title: 'First, by code', steps: [['The follow-ups that are due get today’s scores', '', 'code'], ['Code answers In motion and Money', 'with no AI', 'code']], end: [['Both answers are saved', 'before any Opus starts', 'code']] },
         { title: 'Then the whole account', steps: [['Tracking, the client module, and Setup and market', 'one Opus each, when it is due', 'opus']], end: [['None of them reads the list', '', 'code']] },
         { title: 'Then each campaign, and last the Decide module', steps: [['The four campaign modules and the Decide module', 'each needs a list from the last {motionFresh} days', 'opus']], end: [['They get the list before they answer', '', 'keep']] }] },
-      vcap: 'A quiet morning with nothing new still makes the list. Then no AI starts at all, unless the list or Money finds a problem.',
+      vcap: 'A quiet morning with nothing new still makes the list. Then no module helper starts, unless the list or Money finds a problem, but the runâs own Opus thread still does its first pass and its paperwork.',
       quote: ['What if I make the checking system modular?', 'Oct 31'] },
     { about: ['motion'], kicker: 'Status · Nov 8',
       head: 'The module is built and has run in tests on three clients, but no live morning runs it until Will says yes',
@@ -164,5 +164,5 @@ LOGIC.flow({
     BLIND: { tag: 'plan', rows: [{ steps: [['Isaac’s call with Waylon, Oct 30', 'what they agreed is in no record', 'next'], ['A written note of the call reaches the list', '', 'next']], end: [['The list shows what was agreed beside the changes', '', 'next']] }], note: 'Not built. Today nothing writes down what a call or a Slack message agreed, so the list cannot hold it.' }
   },
 
-  reviewed: { self: '6f4ab372', on: '2026-11-08' }
+  reviewed: { self: '6f4ab372', above: '2525099a', on: '2026-11-08' }
 });

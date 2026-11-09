@@ -141,5 +141,5 @@ LOGIC.flow({
     GIVE: { tag: 'real', rows: [{ steps: [['C2’s test answer, Nov 1', 'a problem', 'opus'], ['The In motion module’s later answers that day', 'they repeat its whole summary', 'code']], end: [['C2’s fact sheet of Nov 7 asks Opus to test that answer first', '', 'code']] }], note: 'We took these from the client module’s answer for C2 on Nov 1, the In motion module’s answers that day, and C2’s fact sheet of Nov 7.' }
   },
 
-  reviewed: { self: '9e79099d', on: '2026-11-08' }
+  reviewed: { self: '9e79099d', above: '2525099a', on: '2026-11-08' }
 });

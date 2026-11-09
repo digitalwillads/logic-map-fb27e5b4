@@ -121,5 +121,5 @@ LOGIC.flow({
     OK: { tag: 'real', rows: [{ steps: [['C2’s answer 53', 'too few to tell', 'opus'], ['Saved', 'Nov 1', 'code']], end: [['The next morning’s facts show it as the last answer', '', 'code']] }], note: 'C2’s answer 53, of Nov 1. Its two quotes saved as checked.' }
   },
 
-  reviewed: { self: 'a8fedaf1', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: 'a8fedaf1', above: 'a030a55d', on: '2026-11-08' }
 });

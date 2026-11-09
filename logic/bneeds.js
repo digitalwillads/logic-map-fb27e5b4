@@ -112,5 +112,5 @@ LOGIC.flow({
     MON: { tag: 'real', rows: [{ steps: [['Bull’s Money answer, Nov 1, good', '$0 so far at $176.03 a day, against $5,800 a month', 'code']], end: [['The spend box is shut', 'Will has set everything on Bull Legal to wait', 'block']] }], note: 'The line as code handed it to Opus for Bull on Nov 7.' }
   },
 
-  reviewed: { self: 'a4bb4822', above: '4bfe1dd5', on: '2026-11-08' }
+  reviewed: { self: 'a4bb4822', above: 'a030a55d', on: '2026-11-08' }
 });

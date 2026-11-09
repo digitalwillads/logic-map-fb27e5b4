@@ -151,5 +151,5 @@ LOGIC.flow({
     GAP: { tag: 'made', rows: [{ steps: [['A campaign starts to lose searches to budget', '', 'code'], ['Code asks its reasons', 'none of them reads a share', 'code']], end: [['It waits until a reason fits, or {bidFresh} days pass', '', 'wait']] }], note: 'Made, because no real case has come up yet.' }
   },
 
-  reviewed: { self: '63f41669', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: '63f41669', above: 'a030a55d', on: '2026-11-08' }
 });

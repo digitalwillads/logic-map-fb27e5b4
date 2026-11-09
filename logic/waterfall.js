@@ -242,5 +242,5 @@ LOGIC.flow({
     SEND: { tag: 'plan', rows: [{ steps: [['The ready negatives', 'a change file and Chad’s input', 'block'], ['The daily run sends them', 'with Barbara’s change tool', 'next']], end: [['Live, and on Will’s daily list with an undo', '', 'next']] }], note: 'Not built yet. ADI’s 4 ready negatives of Nov 8 would wait anyway, because Will holds ADI.' }
   },
 
-  reviewed: { self: 'cf875a54', on: '2026-11-08' }
+  reviewed: { self: 'cf875a54', above: '2525099a', on: '2026-11-08' }
 });
