@@ -70,5 +70,13 @@ LOGIC.facts({
   bidChurnDays: 14,    // bb-churn: ... in this many days on one smart bidding campaign
   bidCpcMin: 50,       // cpc-near-norm: a search that cost this many dollars or more ...
   bidCpcTimes: 5,      // cpc-near-norm: ... at this many times the campaign's norm or more, with no conversion, fails
-  bidCpcClicks: 20     // cpc-near-norm: a campaign under this many clicks has no norm
+  bidCpcClicks: 20,    // cpc-near-norm: a campaign under this many clicks has no norm
+
+  // The In motion module (comm-chat at origin/main 1c24d43a: src/modules/brief/code.rs, numbers.rs, paused.rs, mod.rs; read 2026-11-08).
+  motionChanges: 14,    // CHANGE_DAYS = scorecard::CHANGES_DAYS (code.rs:28): a person's change is listed this many days; a person's pause keeps its campaign on the list as long (paused.rs:23)
+  motionWords: 21,      // TASK_WORD_DAYS (code.rs:35): a comment on an open task is listed this many days
+  motionWordChars: 300, // TASK_WORD_CHARS (code.rs:36): each comment is cut to this many characters
+  motionAsked: 200,     // ASKED_CHARS (code.rs:33): a question's first line is cut to this many characters
+  motionFresh: 7,       // FRESH_DAYS (mod.rs:59): the list counts this many New York days for the modules that need it
+  motionLine: 300       // MOTION_LINE_CHARS (numbers.rs:51): the Decide module reads each line of the list cut to this many characters
 });
