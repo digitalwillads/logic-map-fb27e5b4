@@ -90,7 +90,7 @@ LOGIC.flow({
         ['Its line', '0 tests run, 19 questions wait on a person, 18 people’s changes, and 0 follow-ups are due.'],
         ['Also handed on', 'the open cases on this campaign, and its changes of the last {bidChanges} days, each with its day'],
         ['Not handed on', 'a teammate’s word on an open task, the day a follow-up is due, and the hour of a change']], stamp: ['Counts only', 'wait'] },
-      vcap: 'On Oct 28 Yasir froze all of Bull’s bids and budgets, but he wrote it only in the comments of two tasks. In motion now lists words like his, while Bid and budget still gets only their count.',
+      vcap: 'On Oct 28 Yasir froze all of Bull’s bids and budgets, but he wrote it only in the comments of two tasks. In motion now reads such comments, but only on open tasks and only their first {motionWordChars} characters, so it still misses this freeze. Bid and budget gets only the count of such words.',
       open: 'bidmotion' },
 
     { about: ['bnmoney'], kicker: 'How much room there is',
@@ -112,5 +112,5 @@ LOGIC.flow({
     MON: { tag: 'real', rows: [{ steps: [['Bull’s Money answer, Nov 1, good', '$0 so far at $176.03 a day, against $5,800 a month', 'code']], end: [['The spend box is shut', 'Will has set everything on Bull Legal to wait', 'block']] }], note: 'The line as code handed it to Opus for Bull on Nov 7.' }
   },
 
-  reviewed: { self: 'b68986b8', above: '4bfe1dd5', on: '2026-11-07' }
+  reviewed: { self: 'a4bb4822', above: '4bfe1dd5', on: '2026-11-08' }
 });
